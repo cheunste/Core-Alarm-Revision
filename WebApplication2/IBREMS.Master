@@ -1,0 +1,52 @@
+﻿<%@ Master Language="C#" AutoEventWireup="true" CodeFile="IBREMS.master.cs" Inherits="IBREMS" %>
+
+<%@ Register Assembly="AjaxControlToolkit" Namespace="AjaxControlToolkit" TagPrefix="ajaxToolkit" %>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head runat="server">
+    <title>Commercial Ops Tools</title>
+    <link href="/IBREMS.css" rel="stylesheet" type="text/css" />
+    <asp:ContentPlaceHolder id="head" runat="server">
+    </asp:ContentPlaceHolder>
+    
+</head>
+<body>
+    <form id="form1" runat="server">
+    <div>
+    <table class="masterheader">
+        <tbody>
+            <tr>
+                <th>
+                    <a href="/"><img id="Img1" runat="server" src="~/_images/iri-logo-horizontal.png" alt="Iberdrola Renewables" title="Iberdrola Renewables" border="0" /></a>
+                </th>
+                <td>
+                    <span class="header">Commercial Operations Tools</span>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+        
+        
+
+        <ajaxToolkit:ToolkitScriptManager runat="Server" ID="ToolkitScriptManager1" />
+
+        <%--<asp:ScriptManager ID="ScriptManager1" runat="server">
+        </asp:ScriptManager>--%>
+        <asp:ContentPlaceHolder id="ContentPlaceHolder1" runat="server">
+        
+        </asp:ContentPlaceHolder>
+    </div>
+    </form>
+    <div class="endofpage">End of page.</div>
+    <div class="hidden">
+          Logged in as: <asp:Label runat="server" ID="Master_User_Identity" />
+        | P#: <asp:Label runat="server" ID="Master_User_PNumber" />
+        | Impersonating: <asp:Label runat="server" ID="Master_User_Impersonating" />
+        | Accessed on: <asp:Label runat="server" ID="Master_Accessed_Time" />
+        | URL: <asp:Label runat="server" ID="Master_Accessed_URL" />
+    </div>
+
+</body>
+</html>

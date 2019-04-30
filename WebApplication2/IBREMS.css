@@ -1,0 +1,275 @@
+﻿body, textarea {
+    font-family: Calibri,Arial,sans-serif;
+}
+
+/* Global Tags */
+
+a {
+    text-decoration: none;
+}
+
+    a.aspNetDisabled {
+        color: Gray;
+    }
+
+    a:hover {
+        text-decoration: underline;
+    }
+
+    a.aspNetDisabled:hover {
+        text-decoration: none;
+    }
+
+table {
+    margin: 0;
+    padding: 0;
+    border: none;
+}
+
+    /* Standard Table Types */
+
+    table.tblResults {
+        border-collapse: collapse;
+    }
+
+        table.tblResults > thead {
+        }
+
+            table.tblResults > thead > tr {
+            }
+
+                table.tblResults > thead > tr > th {
+                    border: 1px solid black;
+                    padding: 3px 3px 3px 3px;
+                    background-color: #628021;
+                    color: #ffffff;
+                }
+
+        table.tblResults > tbody {
+        }
+
+            table.tblResults > tbody > tr {
+            }
+
+                table.tblResults > tbody > tr > th {
+                    border: 1px solid black;
+                    padding: 3px 3px 3px 3px;
+                    background-color: #96a85d;
+                    color: #ffffff;
+                    text-align: left;
+                }
+
+                table.tblResults > tbody > tr > td {
+                    border: 1px solid black;
+                    padding: 3px 3px 3px 3px;
+                }
+
+    table.tblParameters {
+        border-collapse: collapse;
+    }
+
+        table.tblParameters > thead {
+        }
+
+            table.tblParameters > thead > tr {
+            }
+
+                table.tblParameters > thead > tr > th {
+                    border: 1px solid gray;
+                    padding: 3px 3px 3px 3px;
+                    background-color: Silver;
+                }
+
+                table.tblParameters > thead > tr > td {
+                    border: 1px solid gray;
+                    padding: 3px 3px 3px 3px;
+                    background-color: Black;
+                }
+
+        table.tblParameters > tbody {
+        }
+
+            table.tblParameters > tbody > tr {
+            }
+
+                table.tblParameters > tbody > tr > th {
+                    border: 1px solid gray;
+                    padding: 3px 3px 3px 3px;
+                }
+
+                table.tblParameters > tbody > tr > td {
+                    border: 1px solid gray;
+                    padding: 3px 3px 3px 3px;
+                }
+
+                    table.tblParameters > tbody > tr > td:first-child {
+                        vertical-align: top;
+                        text-align: left;
+                    }
+
+                table.tblParameters > tbody > tr > th:first-child {
+                    vertical-align: top;
+                    text-align: left;
+                }
+
+                table.tblParameters > tbody > tr > td:first-child + td {
+                }
+
+                    table.tblParameters > tbody > tr > td:first-child + td + td {
+                        font-style: italic;
+                        font-size: small;
+                    }
+
+                table.tblParameters > tbody > tr > td:last-child {
+                    font-style: italic;
+                    font-size: small;
+                }
+
+        table.tblParameters span.sidenote {
+            font-style: italic;
+            font-size: small;
+        }
+
+
+    table.masterheader {
+        vertical-align: bottom;
+    }
+
+        table.masterheader > tbody > tr > th {
+            vertical-align: bottom;
+            margin-bottom: 10px;
+        }
+
+        table.masterheader > tbody > tr > td {
+            vertical-align: bottom;
+            margin-bottom: 0px;
+            padding-bottom: 0px;
+            padding-left: 20px;
+        }
+
+            table.masterheader > tbody > tr > td > span.header {
+                font-size: 18pt;
+                font-weight: bold;
+            }
+
+
+    table.tblClear {
+        border-collapse: collapse;
+    }
+
+        table.tblClear > thead {
+        }
+
+            table.tblClear > thead > tr {
+            }
+
+                table.tblClear > thead > tr > th {
+                    border: none;
+                }
+
+        table.tblClear > tbody {
+        }
+
+            table.tblClear > tbody > tr {
+            }
+
+                table.tblClear > tbody > tr > th {
+                    border: none;
+                }
+
+                table.tblClear > tbody > tr > td {
+                    border: none;
+                    vertical-align: top;
+                }
+
+                    table.tblClear > tbody > tr > td:first-child {
+                        width: 60px;
+                    }
+
+                        table.tblClear > tbody > tr > td:first-child + td {
+                        }
+
+    table.tblForm {
+        margin: 10px 0 10px 0;
+        border-collapse: collapse
+    }
+
+        table.tblForm th, .tblForm td {
+            border: 1px solid Black;
+            padding: 5px
+        }
+
+        table.tblForm tr td:first-child {
+            background-color: Silver;
+            font-weight: bold
+        }
+
+/* Generic Classes */
+.sidenote {
+    font-style: italic;
+    font-size: small;
+    color: Silver;
+}
+
+.warning {
+    color: Maroon;
+    font-style: italic;
+}
+
+.hidden {
+    color: White;
+    font-size: small;
+}
+
+.endofpage {
+    padding-top: 15px;
+    text-align: center;
+    color: Silver;
+}
+
+.nowrap {
+    white-space: nowrap;
+}
+
+.hide {
+    display: none;
+}
+
+/*Modal Popup*/
+.modalBackground {
+    background-color: White;
+    filter: alpha(opacity=70);
+    opacity: 0.7;
+}
+
+.modalPopup {
+    background-color: #ffffff;
+    border-width: 2px;
+    border-style: solid;
+    border-color: Gray;
+    padding: 3px;
+    width: 820px;
+    padding: 0px;
+}
+
+    .modalPopup p {
+        padding: 5px;
+    }
+
+.modalPopupHandle {
+    cursor: move;
+    background-color: #DDDDDD;
+    border-bottom: solid 1px Gray;
+    color: Black;
+    text-align: center;
+    font-size: 14pt;
+    font-weight: bold;
+}
+
+.modalPopup .popupBody {
+    padding: 10px;
+}
+
+.ob_iDdlICB {
+    z-index: 100002 !important;
+}

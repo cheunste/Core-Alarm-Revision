@@ -1,0 +1,436 @@
+﻿<%@ Page Title="Home Page" Language="C#" MasterPageFile="~/IBREMS.Master" AutoEventWireup="true" CodeBehind="Default.aspx.cs" Inherits="alarms_Default" %>
+
+<%@ Register Assembly="obout_Window_NET" Namespace="OboutInc.Window" TagPrefix="owd" %>
+<%@ Register Assembly="obout_Grid_NET" Namespace="Obout.Grid" TagPrefix="obout" %>
+
+
+<asp:Content ID="Content1" ContentPlaceHolderID="head" Runat="Server">
+</asp:Content>
+<asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" Runat="Server">
+
+    <h2>CORE Alarms</h2>
+
+        <table class="tblParameters">
+        <thead>
+            <tr>
+                <th>Parameter</th>
+                <th>Value</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+<%--            <tr><td>Start Day</td>
+                <td>
+                    <ASP:TextBox runat="server" id="txtDateStart" />
+                    <obout:Calendar ID="calDateStart" runat="server" DatePickerMode="True" TextBoxId="txtDateStart" DatePickerImagePath="/_images/calicon.gif" />
+                </td>
+                <td>From midnight.</td></tr>
+            <tr><td>End Day</td>
+                <td><ASP:TextBox runat="server" id="txtDateEnd" />
+                    <obout:Calendar ID="calDateEnd" runat="server" DatePickerMode="True" TextBoxId="txtDateEnd" DatePickerImagePath="/_images/calicon.gif" /></td>
+                <td>Until 11:59:59.999</td></tr>--%>
+<%--            <tr><td>Site</td>     
+                <td><asp:DropDownList runat="server" ID="ddlSite" DataSourceID="SqlDataSource_List_Sites" DataTextField="Transaction_Site" DataValueField="Transaction_Site" AppendDataBoundItems="true">
+                        <asp:ListItem Text="(All Sites)" Value="" />
+                    </asp:DropDownList>
+                    <asp:SqlDataSource runat="server" ID="SqlDataSource_List_Sites"
+                        ConnectionString="<%$ ConnectionStrings:ConnectionString_PDXSQL08_EMSWEB %>"
+                        SelectCommandType="StoredProcedure" SelectCommand="uspPSPSites"
+                    ></asp:SqlDataSource></td>
+                <td></td></tr>--%>
+            <tr><th>Time Range<br /><span style="font-weight:normal; font-size:small; font-style:italic;">(UTC)</span></th>
+                <td colspan="1">
+                    <asp:TextBox runat="server" ID="txtParamDTStart" Width="140" />
+                    to
+                    <asp:TextBox runat="server" ID="txtParamDTEnd" Width="140" />
+                    <br />
+                    <div class="sidenote">
+                        <b>Set start time to (NOW-</b>
+                        <asp:LinkButton runat="server" Text="1m"  ID="lbtDTStart1m"  onclick="lbtDTStart1m_Click1"  /> |
+                        <asp:LinkButton runat="server" Text="10m" ID="lbtDTStart10m" onclick="lbtDTStart10m_Click" /> |
+                        <asp:LinkButton runat="server" Text="30m" ID="lbtDTStart30m" onclick="lbtDTStart30m_Click" /> |
+                        <asp:LinkButton runat="server" Text="1h"  ID="lbtDTStart1h"  onclick="lbtDTStart1h_Click"  /> |
+                        <asp:LinkButton runat="server" Text="3h"  ID="lbtDTStart3h"  onclick="lbtDTStart3h_Click"  /> |
+                        <asp:LinkButton runat="server" Text="6h"  ID="lbtDTStart6h"  onclick="lbtDTStart6h_Click"  /><b>)</b>
+                    </div>
+                </td><td>Start/end time in UTC.</td></tr>
+            <tr><th>Alarm List</th>
+                <td>
+                    <asp:TextBox runat="server" ID="txtParamLogList" />
+                    <asp:DropDownList runat="server" ID="ddlParamLogList" OnSelectedIndexChanged="ddlParamLogList_SelectedIndexChanged" AutoPostBack="true">
+                        <asp:ListItem Text="(All)" Value="" Selected="True" />
+                        <asp:ListItem Text="ALMBART1" />    
+                        <asp:ListItem Text="ALMBART2" />    
+                        <asp:ListItem Text="ALMBARTC" />    
+                        <asp:ListItem Text="ALMBIGH2" />    
+                        <asp:ListItem Text="ALMBIGHO" />    
+                        <asp:ListItem Text="ALMBUFA2" />    
+                        <asp:ListItem Text="ALMBUFAL" />    
+                        <asp:ListItem Text="ALMCASSE" />    
+                        <asp:ListItem Text="ALMCOGRE" />    
+                        <asp:ListItem Text="ALMCRIDG" />    
+                        <asp:ListItem Text="ALMDILON" />    
+                        <asp:ListItem Text="ALMDRYL2" />    
+                        <asp:ListItem Text="ALMDRYLA" />    
+                        <asp:ListItem Text="ALMELKRI" />    
+                        <asp:ListItem Text="ALMELMC2" />    
+                        <asp:ListItem Text="ALMELMCR" />    
+                        <asp:ListItem Text="ALMFARME" />    
+                        <asp:ListItem Text="ALMFE01" />     
+                        <asp:ListItem Text="ALMFE02" />     
+                        <asp:ListItem Text="ALMFE03" />     
+                        <asp:ListItem Text="ALMFE04" />     
+                        <asp:ListItem Text="ALMFE05" />     
+                        <asp:ListItem Text="ALMFE06" />     
+                        <asp:ListItem Text="ALMFE07" />     
+                        <asp:ListItem Text="ALMFE08" />     
+                        <asp:ListItem Text="ALMFLYCO" />    
+                        <asp:ListItem Text="ALMHAYCA" />    
+                        <asp:ListItem Text="ALMJUNCA" />    
+                        <asp:ListItem Text="ALMKLON1" />    
+                        <asp:ListItem Text="ALMKLON2" />    
+                        <asp:ListItem Text="ALMKLONA" />    
+                        <asp:ListItem Text="ALMKLONG" />    
+                        <asp:ListItem Text="ALMKLONS" />    
+                        <asp:ListItem Text="ALMLEJU2" />    
+                        <asp:ListItem Text="ALMLEJUN" />    
+                        <asp:ListItem Text="ALMLEMPS" />    
+                        <asp:ListItem Text="ALMLRID1" />    
+                        <asp:ListItem Text="ALMLRID2" />    
+                        <asp:ListItem Text="ALMMINND" />    
+                        <asp:ListItem Text="ALMMORA1" />    
+                        <asp:ListItem Text="ALMMORA2" />    
+                        <asp:ListItem Text="ALMMRID1" />    
+                        <asp:ListItem Text="ALMMRID2" />    
+                        <asp:ListItem Text="ALMMRIDG" />    
+                        <asp:ListItem Text="ALMPENE1" />    
+                        <asp:ListItem Text="ALMPENE2" />    
+                        <asp:ListItem Text="ALMPENE3" />    
+                        <asp:ListItem Text="ALMPESPR" />    
+                        <asp:ListItem Text="ALMPROVH" />    
+                        <asp:ListItem Text="ALMRUGBY" />    
+                        <asp:ListItem Text="ALMSCRAB" />    
+                        <asp:ListItem Text="ALMSHILO" />    
+                        <asp:ListItem Text="ALMSTPOI" />    
+                        <asp:ListItem Text="ALMTOPIO" />    
+                        <asp:ListItem Text="ALMTRIMO" />    
+                        <asp:ListItem Text="ALMTWINB" />    
+                        <asp:ListItem Text="ALMWINNE" />    
+                        <asp:ListItem Text="BARTC" />       
+                        <asp:ListItem Text="PENE1" />       
+                        <asp:ListItem Text="PENE2" />       
+                        <asp:ListItem Text="PENE3" /> 
+                    </asp:DropDownList>
+                </td>
+                <td>List of alarms. (e.g., plant)</td></tr>
+            <tr><th>Tag</th>
+                <td><asp:TextBox runat="server" ID="txtParamName" Width="250"    /></td>
+                <td>Uses SQL-style syntax: % for multi-character wildcard, _ for single-character wildcard.<br />
+                    This parameter is very processor-intensive, so use it sparingly.</td></tr>
+            <tr><th>SATT3</th>
+                <td><asp:TextBox runat="server" ID="txtParamSATT3" Width="250"    /></td>
+                <td>e.g. Turbine # (A12)</td></tr>
+            <tr><th>CORE FE#</th>
+                <td>
+                    <asp:TextBox runat="server" ID="txtParamProject" Text="" />
+                    <asp:DropDownList runat="server" ID="ddlParamProject" OnSelectedIndexChanged="ddlParamProject_SelectedIndexChanged" AutoPostBack="true">
+                        <asp:ListItem Text="(All)" Value="" Selected="True" />
+                        <asp:ListItem Text="ROCSTAR_FE01" Value="ROCSTAR_FE01" />
+                        <asp:ListItem Text="ROCSTAR_FE02" Value="ROCSTAR_FE02" />
+                        <asp:ListItem Text="ROCSTAR_FE03" Value="ROCSTAR_FE03" />
+                        <asp:ListItem Text="ROCSTAR_FE04" Value="ROCSTAR_FE04" />
+                        <asp:ListItem Text="ROCSTAR_FE05" Value="ROCSTAR_FE05" />
+                        <asp:ListItem Text="ROCSTAR_FE06" Value="ROCSTAR_FE06" />
+                        <asp:ListItem Text="ROCSTAR_FE07" Value="ROCSTAR_FE07" />
+                    </asp:DropDownList>
+                </td>
+                <td>ROCSTAR Project Code</td></tr>
+            <tr><th>Filter Group</th>
+                <td>
+                    <asp:TextBox runat="server" ID="txtParamFilter" Visible="false" />
+                    <asp:DropDownList runat="server" ID="ddlParamFilter" AutoPostBack="true" OnSelectedIndexChanged="ddlParamFilter_SelectedIndexChanged"
+                        DataSourceID="SqlDataSource_Filter" DataTextField="Filter_Group" DataValueField="Filter_Group"
+                        AppendDataBoundItems="true"
+                    >
+                        <asp:ListItem Text="(None)" Value="" />
+                    </asp:DropDownList>
+                    <asp:SqlDataSource runat="server" ID="SqlDataSource_Filter"
+                        ConnectionString="<%$ ConnectionStrings:ConnectionString_PDXSQL03_EMSWEB %>"
+                        SelectCommandType="Text" SelectCommand="SELECT DISTINCT Filter_Group FROM CORE.dbo.Alarm_Filters ORDER BY Filter_Group;"
+                    ></asp:SqlDataSource>
+                    <asp:TextBox runat="server" ID="txtParamFilterMode" Visible="false" Text="Exclude" />
+                    <asp:DropDownList runat="server" ID="ddlParamFilterMode" AutoPostBack="true" OnSelectedIndexChanged="ddlParamFilterMode_SelectedIndexChanged"
+                    >
+                        <asp:ListItem Text="Exclude Matching" Value="Exclude" />
+                        <asp:ListItem Text="Include Matching" Value="Include" />
+                    </asp:DropDownList>
+                    <br />
+                    <span class="sidenote">
+                        <asp:LinkButton runat="server" ID="btnShowFilterEditor" Text="(Show Filter Editor)" OnClick="btnShowFilterEditor_Click" />
+                    </span>
+                </td>
+                <td>Filters apply a set of rules against the alarms and either exclude or include certain patterns of alarms.</td></tr>
+            <%--<tr><td>Event Type</td>
+                <td><asp:TextBox runat="server" ID="txtParamEvtType" /></td>
+                <td></td></tr>--%>
+
+            <tr><th>Max Alarms</th>
+                <td><asp:TextBox runat="server" ID="txtParamMaxAlarms" Text="1000" Width="50" /></td>
+                <td>Maximum # of alarms allowed to be returned; between 1 and 5000.</td></tr>
+                
+        </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="3">
+                    <asp:LinkButton ID="lnkParametersApply" runat="server" onclick="lnkParametersApply_Click">Search</asp:LinkButton>
+                    |
+                    <asp:LinkButton ID="lnkParametersCSV" runat="server" onclick="lnkParametersCSV_Click">Export to Excel</asp:LinkButton>
+                    |
+                    <asp:LinkButton ID="lnkParametersReset" runat="server" onclick="lnkParametersReset_Click">Reset Parameters</asp:LinkButton>
+                </td>
+            </tr>
+        </tfoot>
+    </table>
+    
+    <asp:RangeValidator ID="RangeValidator1" runat="server"
+        ErrorMessage="Max Alarms out of valid range."
+        EnableClientScript="true"
+        ControlToValidate="txtParamMaxAlarms"
+        MinimumValue="1"
+        MaximumValue="500000"
+        Type="Integer"
+        Font-Bold="true"
+        Display="Dynamic"
+        ForeColor="Red"
+        SetFocusOnError="true"
+    ></asp:RangeValidator>
+    <asp:RegularExpressionValidator ID="RegularExpressionValidator1" runat="server"
+        ErrorMessage="Invalid Start Date."
+        EnableClientScript="true"
+        ControlToValidate="txtParamDTStart"
+        ValidationExpression="^[0-9]{4}-(((0[13578]|(10|12))-(0[1-9]|[1-2][0-9]|3[0-1]))|(02-(0[1-9]|[1-2][0-9]))|((0[469]|11)-(0[1-9]|[1-2][0-9]|30))) (([0-1]?[0-9])|([2][0-3])):([0-5]?[0-9])(:([0-5]?[0-9]))?$"
+        Font-Bold="true"
+        Display="Dynamic"
+        ForeColor="Red"
+        SetFocusOnError="true"
+    ></asp:RegularExpressionValidator>
+        <asp:RegularExpressionValidator ID="RegularExpressionValidator2" runat="server"
+        ErrorMessage="Invalid End Date."
+        EnableClientScript="true"
+        ControlToValidate="txtParamDTEnd"
+        ValidationExpression="^[0-9]{4}-(((0[13578]|(10|12))-(0[1-9]|[1-2][0-9]|3[0-1]))|(02-(0[1-9]|[1-2][0-9]))|((0[469]|11)-(0[1-9]|[1-2][0-9]|30))) (([0-1]?[0-9])|([2][0-3])):([0-5]?[0-9])(:([0-5]?[0-9]))?$"
+        Font-Bold="true"
+        Display="Dynamic"
+        ForeColor="Red"
+        SetFocusOnError="true"
+    ></asp:RegularExpressionValidator>
+
+    <asp:Label runat="server" ID="lblAlarms" Font-Bold="true" />
+    <asp:ListView runat="server" ID="ListView_Alarms"
+    >
+        <LayoutTemplate>
+            <table class="tblResults">
+                <tr>
+                    <th>Time</th>
+                    <th>Project</th>
+                    <th>Alarm List</th>
+                    <th>SATT 3</th>
+                    <th>Tag Name</th>
+                    <th>Tag Description</th>
+                    <th class="hide">Date</th>
+                    <th>Unit Name</th>
+                    <th>Var Type</th>
+                    <th>Priority</th>
+                    <th>N Val</th>
+                    <th>T Val</th>
+                    <th>Evt Type</th>
+                    <th>Evt Title</th>
+                    <th>Evt Text</th>
+                    <th>Comp Inf</th>
+                    <th>User Name</th>
+                    <th>User Note</th>
+                    <th>TS Type</th>
+                    <td class="hide">TS Val</th>
+                    <th>BATT</th>
+                    <th>SATT 1</th>
+                    <th>SATT 2</th>
+                    <th>CDATT 8</th>
+                    <th>Station</th>
+                </tr>
+                <asp:PlaceHolder runat="server" ID="itemPlaceholder" />
+            </table>
+        </LayoutTemplate>
+        <ItemTemplate>
+            <tr>
+                <td class="nowrap"><%# fmtDateTime(epochToDateTime(Eval("CHRONO")))%></td>
+                <td><%# Eval("PROJECT") %></td>
+                <td><%# Eval("LOGLIST") %></td>
+                <td class="nowrap"><%# Eval("SATT3") %></td>
+                <td class="nowrap"><%# Eval("NAME") %></td>
+                <td class="nowrap"><%# Eval("TITLE") %></td>
+                <td><%# Eval("UNITNAME") %></td>
+                <td><%# Eval("VARTYPE") %></td>
+                <td><%# Eval("PRIORITY") == null ? "NULL" : (Eval("PRIORITY").GetType().Name == "DBNull" ? "null" : Eval("PRIORITY")) %></td>
+                <td><%# Eval("NVAL") %></td>
+                <td><%# Eval("TVAL") %></td>
+                <td><%# Eval("EVTTYPE") %></td>
+                <td class="nowrap"><%# Eval("EVTTITLE") %></td>
+                <td><%# Eval("EVTTXT") %></td>
+                <td><%# Eval("COMPINF") %></td>
+                <td><%# Eval("USERNAME") %></td>
+                <td><%# Eval("USERNOTE") %></td>
+                <td><%# Eval("TSTYPE") %></td>
+                <td><%# Eval("BATT") %></td>
+                <td><%# Eval("SATT1") %></td>
+                <td><%# Eval("SATT2") %></td>
+                <td><%# Eval("CDATT8") %></td>
+                <td><%# Eval("STATION") %></td>
+            </tr>
+        </ItemTemplate>
+        <EmptyDataTemplate>NoData</EmptyDataTemplate>
+        <EmptyItemTemplate>NoItem</EmptyItemTemplate>
+    </asp:ListView>
+    
+    <asp:SqlDataSource runat="server" ID="SqlDataSource_Alarms"
+        ConnectionString="<%$ ConnectionStrings:ConnectionString_ORAPDX %>" 
+        SelectCommand="
+            SELECT *
+            FROM ALARMS
+            WHERE
+                [CHRONO] &gt; 1295400535000
+            --DECLARE @epochStart bigint;
+            --SET @epochStart = DATEDIFF(ss,'19700101',DateAdd(hour,8,DateAdd(minute,-1,GetDate()))) * CONVERT(bigint,1000);
+            --PRINT @epochStart;
+            --SELECT * FROM ORAPDX..HIS.ALARMS WHERE [CHRONO] > @epochStart;
+        "
+    >
+
+    </asp:SqlDataSource>
+
+        <owd:Window ID="Window_FilterEditor" runat="server"
+            StyleFolder="/obout/Window/wdstyles/blue"
+            IsModal="True"
+            VisibleOnLoad="false"
+            Overflow="HIDDEN"
+            MinWidth="802"
+            MinHeight="570"
+            OnClientOpen="this.screenCenter();"
+            Title="Filter Editor"
+        >
+            <div class="sidenote" style="color:Black; padding-left: 10px;">
+                <b>Instructions:</b>
+                <ul style="padding:0 0 0 5; margin:0;">
+                <li>FILTER NAME is the filter group that appears in the drop-down-list in the Alarms page parameters. Keep it short.</li>
+                <li>All other fields are 'search' fields:
+                    <ul style="padding:0 0 0 5;">
+                        <li>If a filter in the selected Filter Group (and 'Exclude Matching' is chosen) matches an alarm, that alarm will not be displayed.</li>
+                        <li>Special characters include % and * (any sequence of characters), _ (any single character), and the word 'null' (no data)</li>
+                        <li>e.g., a filter %.TurbinaOk will match only tags ending in .TurbinaOk, e.g. MINDD.A064.TurbinaOk.</li>
+                        <li>However, if you specify MINDD.A064, it will not match MINDD.A064.TurbinaOk because there is no % or * character indicating 'any characters after MINDD.A064'.</li>
+                    </ul>
+                </li>
+                </ul>
+            </div>
+
+            <obout:Grid ID="Grid_FilterEditor" runat="server"
+                DataSourceID="SqlDataSource_FilterEditor"
+                AutoGenerateColumns="false"
+                AllowColumnResizing="true"
+                AllowPaging="false"
+                AllowFiltering="true"
+                AllowAddingRecords="true"
+                PageSize="0"
+                Height="400"
+                FolderStyle="/obout/Grid/styles/style_5"
+            >
+                <LocalizationSettings UpdateLink="Save" />
+                <ScrollingSettings ScrollWidth="800" />
+                <Columns>
+                    <obout:Column AllowEdit="true" AllowDelete="true" HeaderText="Edit" Width="100" runat="server" />
+                    <obout:Column DataField="Filter_Id"             HeaderText="Id"             Visible="false" />
+                    <obout:Column DataField="Filter_Exclude"        HeaderText=""               Visible="false" />
+                    <obout:Column DataField="Filter_Creator"        HeaderText="Creator"        Visible="false" ReadOnly="true" InsertVisible="false" />
+                    <obout:Column DataField="Filter_Created"        HeaderText="Created"        Visible="false" ReadOnly="true" InsertVisible="false" />
+                    <obout:Column DataField="Filter_Group"          HeaderText="FILTER NAME"    ControlStyle-Font-Bold="true" ItemStyle-Font-Bold="true" />
+                    <obout:Column DataField="Filter_Field_Project"  HeaderText="Project"     />
+                    <obout:Column DataField="Filter_Field_UnitName" HeaderText="Unit Name"   />
+                    <obout:Column DataField="Filter_Field_VarType"  HeaderText="Var Type"    />
+                    <obout:Column DataField="Filter_Field_Name"     HeaderText="Tag Name"    />
+                    <obout:Column DataField="Filter_Field_Priority" HeaderText="Priority"    />
+                    <obout:Column DataField="Filter_Field_NVal"     HeaderText="N Val"       />
+                    <obout:Column DataField="Filter_Field_LogList"  HeaderText="T Val"       />
+                    <obout:Column DataField="Filter_Field_EvtType"  HeaderText="Evt Type"    />
+                    <obout:Column DataField="Filter_Field_TSType"   HeaderText="TS Type"     />
+                    <obout:Column DataField="Filter_Field_SATT1"    HeaderText="SATT 1"      />
+                    <obout:Column DataField="Filter_Field_SATT2"    HeaderText="SATT 2"      />
+                    <obout:Column DataField="Filter_Field_SATT3"    HeaderText="SATT 3"      />
+                    <obout:Column DataField="Filter_Field_Station"  HeaderText="Station"     />
+                </Columns>
+            </obout:Grid>
+            <asp:SqlDataSource runat="server" ID="SqlDataSource_FilterEditor"
+                ConnectionString="<%$ ConnectionStrings:ConnectionString_PDXSQL03_EMSWEB %>"
+                ProviderName="System.Data.SqlClient"
+                SelectCommand="SELECT * FROM CORE.dbo.Alarm_Filters ORDER BY Filter_Group;"
+                UpdateCommand="UPDATE CORE.dbo.Alarm_Filters
+                                SET
+                                      Filter_Group          = @Filter_Group
+                                    , Filter_Exclude        = @Filter_Exclude
+                                    , Filter_Field_Project  = @Filter_Field_Project
+                                    , Filter_Field_UnitName = @Filter_Field_UnitName
+                                    , Filter_Field_VarType  = @Filter_Field_VarType
+                                    , Filter_Field_Name     = @Filter_Field_Name   
+                                    , Filter_Field_Priority = @Filter_Field_Priority
+                                    , Filter_Field_NVal     = @Filter_Field_NVal   
+                                    , Filter_Field_LogList  = @Filter_Field_LogList
+                                    , Filter_Field_EvtType  = @Filter_Field_EvtType
+                                    , Filter_Field_TSType   = @Filter_Field_TSType 
+                                    , Filter_Field_SATT1    = @Filter_Field_SATT1  
+                                    , Filter_Field_SATT2    = @Filter_Field_SATT2  
+                                    , Filter_Field_SATT3    = @Filter_Field_SATT3  
+                                    , Filter_Field_Station  = @Filter_Field_Station
+                                WHERE Filter_Id = @Filter_Id
+                    "
+                    DeleteCommand="DELETE FROM CORE.dbo.Alarm_Filters WHERE Filter_Id = @Filter_Id;"
+                    InsertCommand="INSERT CORE.dbo.Alarm_Filters
+                                    (
+                                          Filter_Group         
+                                        , Filter_Exclude       
+                                        , Filter_Field_Project 
+                                        , Filter_Field_UnitName
+                                        , Filter_Field_VarType 
+                                        , Filter_Field_Name    
+                                        , Filter_Field_Priority
+                                        , Filter_Field_NVal    
+                                        , Filter_Field_LogList 
+                                        , Filter_Field_EvtType 
+                                        , Filter_Field_TSType  
+                                        , Filter_Field_SATT1   
+                                        , Filter_Field_SATT2   
+                                        , Filter_Field_SATT3   
+                                        , Filter_Field_Station 
+                                    )
+                                    VALUES
+                                    (
+                                          @Filter_Group
+                                        , @Filter_Exclude
+                                        , @Filter_Field_Project
+                                        , @Filter_Field_UnitName
+                                        , @Filter_Field_VarType
+                                        , @Filter_Field_Name   
+                                        , @Filter_Field_Priority
+                                        , @Filter_Field_NVal   
+                                        , @Filter_Field_LogList
+                                        , @Filter_Field_EvtType
+                                        , @Filter_Field_TSType 
+                                        , @Filter_Field_SATT1  
+                                        , @Filter_Field_SATT2  
+                                        , @Filter_Field_SATT3  
+                                        , @Filter_Field_Station
+                                    )
+                    "
+            >
+            </asp:SqlDataSource>
+        </owd:Window>
+
+    <asp:Label runat="server" ID="lblDebug" ForeColor="White" />
+</asp:Content>
