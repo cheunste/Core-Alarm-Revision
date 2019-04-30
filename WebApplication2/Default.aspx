@@ -127,53 +127,7 @@
                 <td><asp:TextBox runat="server" ID="txtParamName" Width="250"    /></td>
                 <td>Uses SQL-style syntax: % for multi-character wildcard, _ for single-character wildcard.<br />
                     This parameter is very processor-intensive, so use it sparingly.</td></tr>
-            <tr><th>SATT3</th>
-                <td><asp:TextBox runat="server" ID="txtParamSATT3" Width="250"    /></td>
-                <td>e.g. Turbine # (A12)</td></tr>
-            <tr><th>CORE FE#</th>
-                <td>
-                    <asp:TextBox runat="server" ID="txtParamProject" Text="" />
-                    <asp:DropDownList runat="server" ID="ddlParamProject" OnSelectedIndexChanged="ddlParamProject_SelectedIndexChanged" AutoPostBack="true">
-                        <asp:ListItem Text="(All)" Value="" Selected="True" />
-                        <asp:ListItem Text="ROCSTAR_FE01" Value="ROCSTAR_FE01" />
-                        <asp:ListItem Text="ROCSTAR_FE02" Value="ROCSTAR_FE02" />
-                        <asp:ListItem Text="ROCSTAR_FE03" Value="ROCSTAR_FE03" />
-                        <asp:ListItem Text="ROCSTAR_FE04" Value="ROCSTAR_FE04" />
-                        <asp:ListItem Text="ROCSTAR_FE05" Value="ROCSTAR_FE05" />
-                        <asp:ListItem Text="ROCSTAR_FE06" Value="ROCSTAR_FE06" />
-                        <asp:ListItem Text="ROCSTAR_FE07" Value="ROCSTAR_FE07" />
-                    </asp:DropDownList>
-                </td>
-                <td>ROCSTAR Project Code</td></tr>
-            <tr><th>Filter Group</th>
-                <td>
-                    <asp:TextBox runat="server" ID="txtParamFilter" Visible="false" />
-                    <asp:DropDownList runat="server" ID="ddlParamFilter" AutoPostBack="true" OnSelectedIndexChanged="ddlParamFilter_SelectedIndexChanged"
-                        DataSourceID="SqlDataSource_Filter" DataTextField="Filter_Group" DataValueField="Filter_Group"
-                        AppendDataBoundItems="true"
-                    >
-                        <asp:ListItem Text="(None)" Value="" />
-                    </asp:DropDownList>
-                    <asp:SqlDataSource runat="server" ID="SqlDataSource_Filter"
-                        ConnectionString="<%$ ConnectionStrings:ConnectionString_PDXSQL03_EMSWEB %>"
-                        SelectCommandType="Text" SelectCommand="SELECT DISTINCT Filter_Group FROM CORE.dbo.Alarm_Filters ORDER BY Filter_Group;"
-                    ></asp:SqlDataSource>
-                    <asp:TextBox runat="server" ID="txtParamFilterMode" Visible="false" Text="Exclude" />
-                    <asp:DropDownList runat="server" ID="ddlParamFilterMode" AutoPostBack="true" OnSelectedIndexChanged="ddlParamFilterMode_SelectedIndexChanged"
-                    >
-                        <asp:ListItem Text="Exclude Matching" Value="Exclude" />
-                        <asp:ListItem Text="Include Matching" Value="Include" />
-                    </asp:DropDownList>
-                    <br />
-                    <span class="sidenote">
-                        <asp:LinkButton runat="server" ID="btnShowFilterEditor" Text="(Show Filter Editor)" OnClick="btnShowFilterEditor_Click" />
-                    </span>
-                </td>
-                <td>Filters apply a set of rules against the alarms and either exclude or include certain patterns of alarms.</td></tr>
-            <%--<tr><td>Event Type</td>
-                <td><asp:TextBox runat="server" ID="txtParamEvtType" /></td>
-                <td></td></tr>--%>
-
+          
             <tr><th>Max Alarms</th>
                 <td><asp:TextBox runat="server" ID="txtParamMaxAlarms" Text="1000" Width="50" /></td>
                 <td>Maximum # of alarms allowed to be returned; between 1 and 5000.</td></tr>
