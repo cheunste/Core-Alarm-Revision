@@ -49,7 +49,7 @@ public partial class alarms_Default : System.Web.UI.Page
         {
             string fileName = "OracleAlarms_";
             fileName = fileName + DateTime.Now.ToString("yyyyMMdd-HHmmss");
-            fileName = fileName + (txtParamFilter.Text != "" ? "_FILTERED" : "");
+            //fileName = fileName + (txtParamFilter.Text != "" ? "_FILTERED" : "");
             fileName = fileName + ".xls";
             exportToCSV(myDT, fileName);
         }
@@ -101,12 +101,12 @@ public partial class alarms_Default : System.Web.UI.Page
         }
 
         //PARAMETER: PROJECT
-        if (!txtParamProject.Text.Equals(""))
-        {
-            oraParams += (oraParams.Equals("") ? "" : " AND ") + "PROJECT = :project";
-            oraCmd.Parameters.Add(new OracleParameter("project", txtParamProject.Text));
-            oraCtCmd.Parameters.Add(new OracleParameter("project", txtParamProject.Text));
-        }
+        //if (!txtParamProject.Text.Equals(""))
+        //{
+        //    oraParams += (oraParams.Equals("") ? "" : " AND ") + "PROJECT = :project";
+        //    oraCmd.Parameters.Add(new OracleParameter("project", txtParamProject.Text));
+        //    oraCtCmd.Parameters.Add(new OracleParameter("project", txtParamProject.Text));
+        //}
 
         //PARAMETER: LOGLIST
         if (!txtParamLogList.Text.Equals(""))
@@ -125,12 +125,12 @@ public partial class alarms_Default : System.Web.UI.Page
         }
 
         //PARAMETER: SATT3
-        if (!txtParamSATT3.Text.Equals(""))
-        {
-            oraParams += (oraParams.Equals("") ? "" : " AND ") + "SATT3 = :satt3";
-            oraCmd.Parameters.Add(new OracleParameter("satt3", txtParamSATT3.Text));
-            oraCtCmd.Parameters.Add(new OracleParameter("satt3", txtParamSATT3.Text));
-        }
+        //if (!txtParamSATT3.Text.Equals(""))
+        //{
+        //    oraParams += (oraParams.Equals("") ? "" : " AND ") + "SATT3 = :satt3";
+        //    oraCmd.Parameters.Add(new OracleParameter("satt3", txtParamSATT3.Text));
+        //    oraCtCmd.Parameters.Add(new OracleParameter("satt3", txtParamSATT3.Text));
+        //}
 
         //PARAMETER: EVTTYPE
 
@@ -171,8 +171,8 @@ public partial class alarms_Default : System.Web.UI.Page
 
                         if (myDT != null)
                         {
-                            if (txtParamFilter.Text != "")
-                                myDT = applyFilter(myDT, txtParamFilter.Text, (txtParamFilterMode.Text.Equals("Exclude")) ? FilterMode.Exclude : FilterMode.Include);
+                            //if (txtParamFilter.Text != "")
+                            //    myDT = applyFilter(myDT, txtParamFilter.Text, (txtParamFilterMode.Text.Equals("Exclude")) ? FilterMode.Exclude : FilterMode.Include);
                             //ListView_Alarms.DataSource = myDT;
                             //ListView_Alarms.DataBind();
                             //dtAlarms = myDT;
@@ -208,7 +208,8 @@ public partial class alarms_Default : System.Web.UI.Page
         try
         {
             //Query filters.
-            DataTable tblFilters = sqlQueryTable(new SqlCommand("SELECT * FROM CORE.dbo.Alarm_Filters WHERE Filter_Group = '" + txtParamFilter.Text + "';"), System.Web.Configuration.WebConfigurationManager.ConnectionStrings["ConnectionString_PDXSQL03_EMSWEB"].ConnectionString);
+            //DataTable tblFilters = sqlQueryTable(new SqlCommand("SELECT * FROM CORE.dbo.Alarm_Filters WHERE Filter_Group = '" + txtParamFilter.Text + "';"), System.Web.Configuration.WebConfigurationManager.ConnectionStrings["ConnectionString_PDXSQL03_EMSWEB"].ConnectionString);
+            DataTable tblFilters = sqlQueryTable(new SqlCommand("SELECT * FROM CORE.dbo.Alarm_Filters WHERE Filter_Group = '" + "';"), System.Web.Configuration.WebConfigurationManager.ConnectionStrings["ConnectionString_PDXSQL03_EMSWEB"].ConnectionString);
 
             debug("<br />Filters applied: ");
             foreach (DataRow row in tblFilters.Rows)
@@ -661,13 +662,13 @@ public partial class alarms_Default : System.Web.UI.Page
         Grid_FilterEditor.DataBind();
 
 
-        if (txtParamFilter.Text.Length > 0)
-        {
-            Obout.Grid.FilterCriteria criteria = new Obout.Grid.FilterCriteria();
-            criteria.Option.Type = Obout.Grid.FilterOptionType.EqualTo;
-            criteria.Value = txtParamFilter.Text;
-            Grid_FilterEditor.Columns["Filter_Group"].FilterCriteria = criteria;
-        }
+        //if (txtParamFilter.Text.Length > 0)
+        //{
+        //    Obout.Grid.FilterCriteria criteria = new Obout.Grid.FilterCriteria();
+        //    criteria.Option.Type = Obout.Grid.FilterOptionType.EqualTo;
+        //    criteria.Value = txtParamFilter.Text;
+        //    Grid_FilterEditor.Columns["Filter_Group"].FilterCriteria = criteria;
+        //}
     }
 
     private void exportToCSV(DataTable dt, string filename)
@@ -710,11 +711,11 @@ public partial class alarms_Default : System.Web.UI.Page
 
     protected void btnShowFilterEditor_Click(object sender, EventArgs e) { updateFilterGrid(); Window_FilterEditor.VisibleOnLoad = true; }
 
-    protected void ddlParamProject_SelectedIndexChanged(object sender, EventArgs e) { txtParamProject.Text = ddlParamProject.SelectedValue; }
+    //protected void ddlParamProject_SelectedIndexChanged(object sender, EventArgs e) { txtParamProject.Text = ddlParamProject.SelectedValue; }
     protected void ddlParamLogList_SelectedIndexChanged(object sender, EventArgs e) { txtParamLogList.Text = ddlParamLogList.SelectedValue; }
     //protected void ddlParamFilter_SelectedIndexChanged(object sender, EventArgs e) { txtParamFilter.Text = ddlParamFilter.SelectedValue; }
-    protected void ddlParamFilter_SelectedIndexChanged(object sender, EventArgs e) { txtParamFilter.Text = ddlParamFilter.SelectedValue; updateFilterGrid(); }
-    protected void ddlParamFilterMode_SelectedIndexChanged(object sender, EventArgs e) { txtParamFilterMode.Text = ddlParamFilterMode.SelectedValue; }
+    //protected void ddlParamFilter_SelectedIndexChanged(object sender, EventArgs e) { txtParamFilter.Text = ddlParamFilter.SelectedValue; updateFilterGrid(); }
+    //protected void ddlParamFilterMode_SelectedIndexChanged(object sender, EventArgs e) { txtParamFilterMode.Text = ddlParamFilterMode.SelectedValue; }
 
     protected void lbtDTStart1m_Click1(object sender, EventArgs e) { txtParamDTStart.Text = DateTime.UtcNow.AddMinutes(-1).ToString("yyyy-MM-dd HH:mm:ss"); }
     protected void lbtDTStart10m_Click(object sender, EventArgs e) { txtParamDTStart.Text = DateTime.UtcNow.AddMinutes(-10).ToString("yyyy-MM-dd HH:mm:ss"); }
