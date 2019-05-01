@@ -720,11 +720,16 @@ public partial class alarms_Default : System.Web.UI.Page
     //protected void ddlParamFilter_SelectedIndexChanged(object sender, EventArgs e) { txtParamFilter.Text = ddlParamFilter.SelectedValue; updateFilterGrid(); }
     //protected void ddlParamFilterMode_SelectedIndexChanged(object sender, EventArgs e) { txtParamFilterMode.Text = ddlParamFilterMode.SelectedValue; }
 
-    protected void lbtDTStart1m_Click1(object sender, EventArgs e) { txtParamDTStart.Text = DateTime.UtcNow.AddMinutes(-1).ToString("yyyy-MM-dd HH:mm:ss"); }
-    protected void lbtDTStart10m_Click(object sender, EventArgs e) { txtParamDTStart.Text = DateTime.UtcNow.AddMinutes(-10).ToString("yyyy-MM-dd HH:mm:ss"); }
-    protected void lbtDTStart30m_Click(object sender, EventArgs e) { txtParamDTStart.Text = DateTime.UtcNow.AddMinutes(-30).ToString("yyyy-MM-dd HH:mm:ss"); }
-    protected void lbtDTStart1h_Click(object sender, EventArgs e) { txtParamDTStart.Text = DateTime.UtcNow.AddHours(-1).ToString("yyyy-MM-dd HH:mm:ss"); }
-    protected void lbtDTStart3h_Click(object sender, EventArgs e) { txtParamDTStart.Text = DateTime.UtcNow.AddHours(-3).ToString("yyyy-MM-dd HH:mm:ss"); }
-    protected void lbtDTStart6h_Click(object sender, EventArgs e) { txtParamDTStart.Text = DateTime.UtcNow.AddHours(-6).ToString("yyyy-MM-dd HH:mm:ss"); }
+    protected void lbtDTStart_Click(object sender, EventArgs e) {
+
+        String[] command = ((LinkButton)(sender)).CommandArgument.Split(',');
+        String timePeriod = command[1];
+        double time = Convert.ToInt16("-"+command[0]);
+        if (timePeriod.Equals("m"))
+            txtParamDTStart.Text = DateTime.UtcNow.AddMinutes(time).ToString("yyyy-MM-dd HH:mm:ss");
+        else 
+            txtParamDTStart.Text = DateTime.UtcNow.AddHours(time).ToString("yyyy-MM-dd HH:mm:ss");
+
+    }
 
 }
