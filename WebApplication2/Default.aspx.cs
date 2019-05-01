@@ -156,7 +156,8 @@ public partial class alarms_Default : System.Web.UI.Page
         }
 
         //Build the connection string.
-        string oraCstr = "Data Source=ORAPDX;User ID=HIS;Password=HIS;";
+        //string oraCstr = "Data Source=ORAPDX;User ID=HIS;Password=HIS;";
+        string oraCstr = "Data Source=PT1-SV-ORACLE02/core.ppmems.us;User ID=HIS;Password=HIS;";
 
         int maxAlarms; if (!int.TryParse(txtParamMaxAlarms.Text, out maxAlarms)) { lblAlarms.Text = "The value specified for Max Alarms is invalid."; return null; }
 
