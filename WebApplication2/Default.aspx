@@ -46,15 +46,12 @@
                     <br />
                     <div class="sidenote">
                         <b>Set start time to (NOW-</b>
-                        <!--<asp:LinkButton runat="server" Text="1m"  ID="lbtDTStart1m"  onclick="lbtDTStart1m_Click1"  /> |-->
                         <asp:LinkButton runat="server" Text="1m"  OnCommand="lbtDTStart_Click" CommandArgument="1,m"  /> |
-                        <!--<asp:LinkButton runat="server" Text="10m" ID="lbtDTStart10m" onclick="lbtDTStart10m_Click" /> |-->
                         <asp:LinkButton runat="server" Text="10m"  onclick="lbtDTStart_Click" CommandArgument="10,m" /> |
                         <asp:LinkButton runat="server" Text="30m"  onclick="lbtDTStart_Click" CommandArgument="30,m" /> |
                         <asp:LinkButton runat="server" Text="1h"  onclick="lbtDTStart_Click" CommandArgument="1,h" /> |
                         <asp:LinkButton runat="server" Text="3h"  onclick="lbtDTStart_Click" CommandArgument="3,h" /> |
-                        <asp:LinkButton runat="server" Text="6h"  onclick="lbtDTStart_Click" CommandArgument="6,h" /> |
-                        <b>)</b>
+                        <asp:LinkButton runat="server" Text="6h"  onclick="lbtDTStart_Click" CommandArgument="6,h" /> | <b>)</b>
                     </div>
                 </td><td>Start/end time in UTC.</td></tr>
             <tr><th>Alarm List</th>

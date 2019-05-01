@@ -17,6 +17,7 @@ public partial class alarms_Default : System.Web.UI.Page
 {
 
     private DataTable dtAlarms;
+    private DateTime epoch = new DateTime(1970, 1, 1);
 
     protected void Page_Load(object sender, EventArgs e)
     {
@@ -77,7 +78,8 @@ public partial class alarms_Default : System.Web.UI.Page
             }
             else
             {
-                double epochStart = (double)1000 * ((int)(dtStart - new DateTime(1970, 1, 1)).TotalSeconds);
+                //double epochStart = (double)1000 * ((int)(dtStart - new DateTime(1970, 1, 1)).TotalSeconds);
+                long epochStart = ((long)(dtStart - new DateTime(1970, 1, 1)).TotalMilliseconds);
                 oraParams += (oraParams.Equals("") ? "" : " AND ") + "CHRONO >= :dtStart";
                 oraCmd.Parameters.Add(new OracleParameter("dtStart", epochStart));
                 oraCtCmd.Parameters.Add(new OracleParameter("dtStart", epochStart));
@@ -94,7 +96,9 @@ public partial class alarms_Default : System.Web.UI.Page
             }
             else
             {
-                double epochEnd = (double)1000 * ((int)(dtEnd - new DateTime(1970, 1, 1)).TotalSeconds);
+                //double epochEnd = (double)1000 * ((int)(dtEnd - new DateTime(1970, 1, 1)).TotalSeconds);
+                long epochEnd = ((long)(dtEnd - new DateTime(1970, 1, 1)).TotalMilliseconds);
+
                 oraParams += (oraParams.Equals("") ? "" : " AND ") + "CHRONO <= :dtEnd";
                 oraCmd.Parameters.Add(new OracleParameter("dtEnd", epochEnd));
                 oraCtCmd.Parameters.Add(new OracleParameter("dtEnd", epochEnd));
@@ -443,8 +447,14 @@ public partial class alarms_Default : System.Web.UI.Page
 
     private void resetParameters()
     {
+        //UTC Time format
+        //txtParamDTEnd.Text = DateTime.UtcNow.AddMinutes(-1).ToString("yyyy-MM-dd HH:mm:ss");
+        //txtParamDTStart.Text = DateTime.UtcNow.AddMinutes(-1).ToString("yyyy-MM-dd HH:mm:ss");
 
-        txtParamDTStart.Text = DateTime.UtcNow.AddMinutes(-1).ToString("yyyy-MM-dd HH:mm:ss");
+       //Local Time format
+        txtParamDTEnd.Text = DateTime.Now.AddMinutes(-1).ToString("yyyy-MM-dd HH:mm:ss");
+        //txtParamDTStart.Text = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+
         //txtParamDTEnd.Text = DateTime.Now.AddHours(8).ToString("yyyy-MM-dd HH:mm:ss");
         //Set defaults (yesterday) for calendar controls.
         //calDateStart.SelectedDate = DateTime.Today.AddDays(-1);
@@ -726,10 +736,35 @@ public partial class alarms_Default : System.Web.UI.Page
         String timePeriod = command[1];
         double time = Convert.ToInt16("-"+command[0]);
         if (timePeriod.Equals("m"))
-            txtParamDTStart.Text = DateTime.UtcNow.AddMinutes(time).ToString("yyyy-MM-dd HH:mm:ss");
+            txtParamDTStart.Text = DateTime.Now.AddMinutes(time).ToString("yyyy-MM-dd HH:mm:ss");
         else 
-            txtParamDTStart.Text = DateTime.UtcNow.AddHours(time).ToString("yyyy-MM-dd HH:mm:ss");
+            txtParamDTStart.Text = DateTime.Now.AddHours(time).ToString("yyyy-MM-dd HH:mm:ss");
+
+        localTimetoEpochTime(DateTime.Now);
 
     }
 
+    protected DateTime localTimetoEpochTime(DateTime dateTime)
+    {
+        //Timespan  t =dateTime - new DateTime(1970, 1, 1);
+        Boolean dayLightSaving = TimeZoneInfo.Local.IsDaylightSavingTime(dateTime);
+
+
+        long dt = (long)(dateTime - epoch).TotalMilliseconds;
+
+        Console.WriteLine(dt);
+
+
+        if (dayLightSaving)
+        {
+
+        }
+        else
+        {
+
+        }
+
+
+        return DateTime.Now;
+    }
 }
