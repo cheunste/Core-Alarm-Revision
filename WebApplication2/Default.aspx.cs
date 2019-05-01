@@ -8,7 +8,8 @@ using System.Web.UI.WebControls;
 using System.Data;
 using System.Data.SqlClient;
 using System.Data.Linq;
-using Oracle.DataAccess.Client;
+//using Oracle.DataAccess.Client;
+using Oracle.ManagedDataAccess.Client;
 using System.Text.RegularExpressions;
 using System.IO;
 
@@ -367,6 +368,7 @@ public partial class alarms_Default : System.Web.UI.Page
         oraCmd.Connection = oraConn;
         Object retVal;
 
+        Console.WriteLine(connectionString);
         try
         {
             oraConn.Open();
@@ -375,6 +377,7 @@ public partial class alarms_Default : System.Web.UI.Page
         }
         catch (Exception e)
         {
+            Console.WriteLine(e);
             retVal = null;
             throw e;
         }
