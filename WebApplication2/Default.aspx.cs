@@ -63,10 +63,8 @@ public partial class alarms_Default : System.Web.UI.Page
         //Build the plsql command.
         string oraParams = "";
         string oraQry = "SELECT * FROM ALARMS";
-        string oraCtQry = "SELECT COUNT(*) FROM ALARMS";
         string oraOrd = " ORDER BY CHRONO DESC";
         OracleCommand oraCmd = new OracleCommand();
-        OracleCommand oraCtCmd = new OracleCommand();
 
         //PARAMETER: CHRONO.START
         if (!txtParamDTStart.Text.Equals(""))
@@ -84,7 +82,6 @@ public partial class alarms_Default : System.Web.UI.Page
                 Console.WriteLine("EpochStart: " + epochStart);
                 oraParams += (oraParams.Equals("") ? "" : " AND ") + "CHRONO >= :dtStart";
                 oraCmd.Parameters.Add(new OracleParameter("dtStart", epochStart));
-                oraCtCmd.Parameters.Add(new OracleParameter("dtStart", epochStart));
             }
         }
 
@@ -103,7 +100,6 @@ public partial class alarms_Default : System.Web.UI.Page
 
                 oraParams += (oraParams.Equals("") ? "" : " AND ") + "CHRONO <= :dtEnd";
                 oraCmd.Parameters.Add(new OracleParameter("dtEnd", epochEnd));
-                oraCtCmd.Parameters.Add(new OracleParameter("dtEnd", epochEnd));
             }
         }
 
@@ -120,7 +116,6 @@ public partial class alarms_Default : System.Web.UI.Page
         {
             oraParams += (oraParams.Equals("") ? "" : " AND ") + "LOGLIST = :loglist";
             oraCmd.Parameters.Add(new OracleParameter("loglist", txtParamLogList.Text));
-            oraCtCmd.Parameters.Add(new OracleParameter("loglist", txtParamLogList.Text));
         }
 
         //PARAMETER: NAME
@@ -128,7 +123,6 @@ public partial class alarms_Default : System.Web.UI.Page
         {
             oraParams += (oraParams.Equals("") ? "" : " AND ") + "lower(NAME) LIKE lower(:tagname)";
             oraCmd.Parameters.Add(new OracleParameter("tagname", txtParamName.Text));
-            oraCtCmd.Parameters.Add(new OracleParameter("tagname", txtParamName.Text));
         }
 
         //PARAMETER: SATT3
@@ -146,12 +140,10 @@ public partial class alarms_Default : System.Web.UI.Page
             if (!oraParams.Equals(""))
                 oraParams = " WHERE " + oraParams;
         oraCmd.CommandText = oraQry + oraParams + oraOrd;
-        oraCtCmd.CommandText = oraCtQry + oraParams;
         //Response.Write(oraCmd); return;
 
         //Spit out debug of commands and parameters.
         lblDebug.Text += "\n<br />" + oraCmd.CommandText;
-        lblDebug.Text += "\n<br />" + oraCtCmd.CommandText;
         foreach (OracleParameter p in oraCmd.Parameters)
         {
             lblDebug.Text += "\n<br />" + p.ParameterName + ": " + p.Value;
@@ -161,48 +153,9 @@ public partial class alarms_Default : System.Web.UI.Page
         //string oraCstr = "Data Source=ORAPDX;User ID=HIS;Password=HIS;";
         string oraCstr = "Data Source=PT1-SV-ORACLE02/core.ppmems.us;User ID=HIS;Password=HIS;";
 
-        int maxAlarms; if (!int.TryParse(txtParamMaxAlarms.Text, out maxAlarms)) { lblAlarms.Text = "The value specified for Max Alarms is invalid."; return null; }
-
-        Object tempVal = oraQueryScalar(oraCtCmd, oraCstr);
-        if (tempVal == null)
-        {
-            lblAlarms.Text = "No alarms were returned by your query.";
-            return null;
-        }
-        else
-            switch (tempVal.GetType().FullName)
-            {
-                case "System.Decimal":
-                    if ((System.Decimal)tempVal <= maxAlarms)
-                    {
-                        myDT = oraQueryTable(oraCmd, oraCstr);
-
-                        if (myDT != null)
-                        {
-                            //if (txtParamFilter.Text != "")
-                            //    myDT = applyFilter(myDT, txtParamFilter.Text, (txtParamFilterMode.Text.Equals("Exclude")) ? FilterMode.Exclude : FilterMode.Include);
-                            //ListView_Alarms.DataSource = myDT;
-                            //ListView_Alarms.DataBind();
-                            //dtAlarms = myDT;
-                            //lblAlarms.Text = "Alarms Returned: " + ListView_Alarms.Items.Count;
-                            //if (myDT != null)
-                            //    myDT.Dispose();
-                        }
-                    }
-                    else
-                    {
-                        lblAlarms.Text = "Too many alarms would be returned by your query; found " + (System.Decimal)tempVal + ", Max Alarms is " + maxAlarms + ". Narrow the scope of your query.";
-                        return null;
-                    }
-                    break;
-                default:
-                    lblAlarms.Text = "The count returned was invalid: " + tempVal.GetType().FullName;
-                    return null;
-                    break;
-            }
+        myDT = oraQueryTable(oraCmd, oraCstr);
 
         return myDT;
-
     }
 
     private enum FilterMode { Exclude = 0, Include = 1 };
