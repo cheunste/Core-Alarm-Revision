@@ -63,6 +63,7 @@ public partial class alarms_Default : System.Web.UI.Page
         //Build the plsql command.
         string oraParams = "";
         string oraQry = "SELECT * FROM ALARMS";
+        //string oraQry = "SELECT CHRONO,NAME as \"Tag Name\", VARTYPE, TITLE as \"Description\", NVAL as \"Value\", USERNAME FROM ALARMS";
         string oraOrd = " ORDER BY CHRONO DESC";
         OracleCommand oraCmd = new OracleCommand();
 
@@ -228,6 +229,7 @@ public partial class alarms_Default : System.Web.UI.Page
                             && linqMatch(thisRow.Field<Object>("TSTYPE"), f.Field<Object>("Filter_Field_TSType"))
                             && linqMatch(thisRow.Field<Object>("EVTTYPE"), f.Field<Object>("Filter_Field_EvtType"))
                             && linqMatch(thisRow.Field<Object>("NVAL"), f.Field<Object>("Filter_Field_NVal"))
+
                         )
                     /* Delete if:
                      * -Matches Filter AND Filter_Exclude=1

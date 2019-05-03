@@ -30,60 +30,6 @@ public partial class alarms_Default {
     protected global::System.Web.UI.WebControls.TextBox txtParamDTEnd;
     
     /// <summary>
-    /// lbtDTStart1m control.
-    /// </summary>
-    /// <remarks>
-    /// Auto-generated field.
-    /// To modify move field declaration from designer file to code-behind file.
-    /// </remarks>
-    protected global::System.Web.UI.WebControls.LinkButton lbtDTStart1m;
-    
-    /// <summary>
-    /// lbtDTStart10m control.
-    /// </summary>
-    /// <remarks>
-    /// Auto-generated field.
-    /// To modify move field declaration from designer file to code-behind file.
-    /// </remarks>
-    protected global::System.Web.UI.WebControls.LinkButton lbtDTStart10m;
-    
-    /// <summary>
-    /// lbtDTStart30m control.
-    /// </summary>
-    /// <remarks>
-    /// Auto-generated field.
-    /// To modify move field declaration from designer file to code-behind file.
-    /// </remarks>
-    protected global::System.Web.UI.WebControls.LinkButton lbtDTStart30m;
-    
-    /// <summary>
-    /// lbtDTStart1h control.
-    /// </summary>
-    /// <remarks>
-    /// Auto-generated field.
-    /// To modify move field declaration from designer file to code-behind file.
-    /// </remarks>
-    protected global::System.Web.UI.WebControls.LinkButton lbtDTStart1h;
-    
-    /// <summary>
-    /// lbtDTStart3h control.
-    /// </summary>
-    /// <remarks>
-    /// Auto-generated field.
-    /// To modify move field declaration from designer file to code-behind file.
-    /// </remarks>
-    protected global::System.Web.UI.WebControls.LinkButton lbtDTStart3h;
-    
-    /// <summary>
-    /// lbtDTStart6h control.
-    /// </summary>
-    /// <remarks>
-    /// Auto-generated field.
-    /// To modify move field declaration from designer file to code-behind file.
-    /// </remarks>
-    protected global::System.Web.UI.WebControls.LinkButton lbtDTStart6h;
-    
-    /// <summary>
     /// txtParamLogList control.
     /// </summary>
     /// <remarks>
@@ -91,6 +37,15 @@ public partial class alarms_Default {
     /// To modify move field declaration from designer file to code-behind file.
     /// </remarks>
     protected global::System.Web.UI.WebControls.TextBox txtParamLogList;
+    
+    /// <summary>
+    /// SiteDropDownList control.
+    /// </summary>
+    /// <remarks>
+    /// Auto-generated field.
+    /// To modify move field declaration from designer file to code-behind file.
+    /// </remarks>
+    protected global::System.Web.UI.WebControls.DropDownList SiteDropDownList;
     
     /// <summary>
     /// ddlParamLogList control.
@@ -109,15 +64,6 @@ public partial class alarms_Default {
     /// To modify move field declaration from designer file to code-behind file.
     /// </remarks>
     protected global::System.Web.UI.WebControls.TextBox txtParamName;
-    
-    /// <summary>
-    /// txtParamMaxAlarms control.
-    /// </summary>
-    /// <remarks>
-    /// Auto-generated field.
-    /// To modify move field declaration from designer file to code-behind file.
-    /// </remarks>
-    protected global::System.Web.UI.WebControls.TextBox txtParamMaxAlarms;
     
     /// <summary>
     /// lnkParametersApply control.
@@ -145,15 +91,6 @@ public partial class alarms_Default {
     /// To modify move field declaration from designer file to code-behind file.
     /// </remarks>
     protected global::System.Web.UI.WebControls.LinkButton lnkParametersReset;
-    
-    /// <summary>
-    /// RangeValidator1 control.
-    /// </summary>
-    /// <remarks>
-    /// Auto-generated field.
-    /// To modify move field declaration from designer file to code-behind file.
-    /// </remarks>
-    protected global::System.Web.UI.WebControls.RangeValidator RangeValidator1;
     
     /// <summary>
     /// RegularExpressionValidator1 control.

@@ -57,6 +57,17 @@
             <tr><th>Alarm List</th>
                 <td>
                     <asp:TextBox runat="server" ID="txtParamLogList" />
+
+                    <asp:DropDownList
+                        id="SiteDropDownList"
+                        AutoPostBack="true"
+                        runat="server"
+                        OnSelectedINdexChanged="ddlParamLogList_SelectedIndexChanged">
+
+
+                    </asp:DropDownList>
+
+                    <!-- Old -->
                     <asp:DropDownList runat="server" ID="ddlParamLogList" OnSelectedIndexChanged="ddlParamLogList_SelectedIndexChanged" AutoPostBack="true">
                         <asp:ListItem Text="(All)" Value="" Selected="True" />
                         <asp:ListItem Text="ALMBART1" />    
@@ -128,10 +139,6 @@
                 <td>Uses SQL-style syntax: % for multi-character wildcard, _ for single-character wildcard.<br />
                     This parameter is very processor-intensive, so use it sparingly.</td></tr>
           
-            <tr><th>Max Alarms</th>
-                <td><asp:TextBox runat="server" ID="txtParamMaxAlarms" Text="1000" Width="50" /></td>
-                <td>Maximum # of alarms allowed to be returned; between 1 and 5000.</td></tr>
-                
         </tbody>
         <tfoot>
             <tr>
@@ -146,18 +153,6 @@
         </tfoot>
     </table>
     
-    <asp:RangeValidator ID="RangeValidator1" runat="server"
-        ErrorMessage="Max Alarms out of valid range."
-        EnableClientScript="true"
-        ControlToValidate="txtParamMaxAlarms"
-        MinimumValue="1"
-        MaximumValue="500000"
-        Type="Integer"
-        Font-Bold="true"
-        Display="Dynamic"
-        ForeColor="Red"
-        SetFocusOnError="true"
-    ></asp:RangeValidator>
     <asp:RegularExpressionValidator ID="RegularExpressionValidator1" runat="server"
         ErrorMessage="Invalid Start Date."
         EnableClientScript="true"
@@ -210,6 +205,7 @@
                     <th>SATT 2</th>
                     <th>CDATT 8</th>
                     <th>Station</th>
+
                 </tr>
                 <asp:PlaceHolder runat="server" ID="itemPlaceholder" />
             </table>
