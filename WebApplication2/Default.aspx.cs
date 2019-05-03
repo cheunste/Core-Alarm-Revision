@@ -18,6 +18,7 @@ public partial class alarms_Default : System.Web.UI.Page
 
     private DataTable dtAlarms;
     private DateTime epoch = new DateTime(1970, 1, 1);
+    //The queryDict is a Dictionary that stores the Header (used to display to user) and the query name (used for the SQL portion)
     private Dictionary<String,String> queryDict  = new Dictionary<String,String>();
 
     protected void Page_Load(object sender, EventArgs e)
@@ -29,23 +30,28 @@ public partial class alarms_Default : System.Web.UI.Page
             siteList.Add("");
             SiteDropDownList.DataSource = null;
 
-            //Add the  headers and the query columns to the dictionary
+           
+        }
+        if (Page.IsPostBack)
+        {
+            //noop
+             //Add the  headers and the query columns to the dictionary
             queryDict.Add("Time", "CHRONO");
             queryDict.Add("Project", "PROJECT");
             queryDict.Add("Alarm List","LOGLIST");
             queryDict.Add("SATT 3", "SATT3");
             queryDict.Add("Tag Name","NAME");
-            queryDict.Add("Tag Description","TITLE");
+            queryDict.Add("Description","TITLE");
             queryDict.Add("Unit Name", "UNITNAME");
             queryDict.Add("Var Type", "VARTYPE");
             queryDict.Add("Priority", "PRIORITY");
-            queryDict.Add("N Val", "NVAL");
+            queryDict.Add("Value", "NVAL");
             queryDict.Add("T Val", "TVAL");
             queryDict.Add("Evt Type", "EVTTYPE");
             queryDict.Add("Evt Title", "EVTITLE");
             queryDict.Add("Evt Text", "EVTTXT");
             queryDict.Add("Comp Inf","COMPINF");
-            queryDict.Add("User Name", "USERNAME");
+            queryDict.Add("Username", "USERNAME");
             queryDict.Add("User Note", "USERNOTE");
             queryDict.Add("TS Type","TSTYPE");
             queryDict.Add("S Val", "SVAL");
@@ -54,10 +60,6 @@ public partial class alarms_Default : System.Web.UI.Page
             queryDict.Add("SATT 2", "SATT2");
             queryDict.Add("CDATT 8", "CDATT8");
             queryDict.Add("Station", "STATION");
-        }
-        if (Page.IsPostBack)
-        {
-            //noop
         }
         else
         {
@@ -96,8 +98,16 @@ public partial class alarms_Default : System.Web.UI.Page
 
         //Build the plsql command.
         string oraParams = "";
-        string oraQry = "SELECT * FROM ALARMS";
-        //string oraQry = "SELECT CHRONO,NAME as \"Tag Name\", VARTYPE, TITLE as \"Description\", NVAL as \"Value\", USERNAME FROM ALARMS";
+        //string oraQry = "SELECT * FROM ALARMS";
+        Console.WriteLine(queryDict["Time"]);
+        string oraQry = "SELECT " 
+            + " "+queryDict["Time"] 
+            + ","+queryDict["Tag Name"]
+            + ","+queryDict["Description"]
+            + ","+queryDict["Value"]
+            + ","+queryDict["Username"]
+            +" FROM ALARMS";
+
         string oraOrd = " ORDER BY CHRONO DESC";
         OracleCommand oraCmd = new OracleCommand();
 
@@ -433,7 +443,7 @@ public partial class alarms_Default : System.Web.UI.Page
         // if (!Double.TryParse(epoch, out dblTemp))
         //    throw new InvalidCastException("Unable to cast epoch to double.");
         DateTime retVal = new DateTime(1970, 1, 1);
-        retVal = retVal.AddMilliseconds(dblTemp);
+        retVal = retVal.AddMilliseconds(dblTemp).ToLocalTime();
         return retVal;
     }
 

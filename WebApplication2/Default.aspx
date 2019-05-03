@@ -175,8 +175,7 @@
     ></asp:RegularExpressionValidator>
 
     <asp:Label runat="server" ID="lblAlarms" Font-Bold="true" />
-    <asp:ListView runat="server" ID="ListView_Alarms"
-    >
+    <asp:ListView runat="server" ID="ListView_Alarms" >
         <LayoutTemplate>
             <table class="tblResults">
                 <tr>
@@ -213,28 +212,28 @@
         <ItemTemplate>
             <tr>
                 <td class="nowrap"><%# fmtDateTime(epochToDateTime(Eval("CHRONO")))%></td>
-                <td><%# Eval("PROJECT") %></td>
+<%--                <td><%# Eval("PROJECT") %></td>
                 <td><%# Eval("LOGLIST") %></td>
-                <td class="nowrap"><%# Eval("SATT3") %></td>
+                <td class="nowrap"><%# Eval("SATT3") %></td>--%>
                 <td class="nowrap"><%# Eval("NAME") %></td>
                 <td class="nowrap"><%# Eval("TITLE") %></td>
-                <td><%# Eval("UNITNAME") %></td>
+<%--                <td><%# Eval("UNITNAME") %></td>
                 <td><%# Eval("VARTYPE") %></td>
-                <td><%# Eval("PRIORITY") == null ? "NULL" : (Eval("PRIORITY").GetType().Name == "DBNull" ? "null" : Eval("PRIORITY")) %></td>
+                <td><%# Eval("PRIORITY") == null ? "NULL" : (Eval("PRIORITY").GetType().Name == "DBNull" ? "null" : Eval("PRIORITY")) %></td>--%>
                 <td><%# Eval("NVAL") %></td>
-                <td><%# Eval("TVAL") %></td>
+               <%-- <td><%# Eval("TVAL") %></td>
                 <td><%# Eval("EVTTYPE") %></td>
                 <td class="nowrap"><%# Eval("EVTTITLE") %></td>
                 <td><%# Eval("EVTTXT") %></td>
-                <td><%# Eval("COMPINF") %></td>
+                <td><%# Eval("COMPINF") %></td>--%>
                 <td><%# Eval("USERNAME") %></td>
-                <td><%# Eval("USERNOTE") %></td>
+                <%--<td><%# Eval("USERNOTE") %></td>
                 <td><%# Eval("TSTYPE") %></td>
                 <td><%# Eval("BATT") %></td>
                 <td><%# Eval("SATT1") %></td>
                 <td><%# Eval("SATT2") %></td>
                 <td><%# Eval("CDATT8") %></td>
-                <td><%# Eval("STATION") %></td>
+                <td><%# Eval("STATION") %></td>--%>
             </tr>
         </ItemTemplate>
         <EmptyDataTemplate>NoData</EmptyDataTemplate>
