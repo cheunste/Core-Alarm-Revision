@@ -79,7 +79,9 @@ public partial class alarms_Default : System.Web.UI.Page
             else
             {
                 //double epochStart = (double)1000 * ((int)(dtStart - new DateTime(1970, 1, 1)).TotalSeconds);
-                long epochStart = ((long)(dtStart - new DateTime(1970, 1, 1)).TotalMilliseconds);
+                //long epochStart = ((long)(dtStart - new DateTime(1970, 1, 1)).TotalMilliseconds);
+                long epochStart = ((long)(dtStart.ToUniversalTime() - new DateTime(1970, 1, 1)).TotalMilliseconds);
+                Console.WriteLine("EpochStart: " + epochStart);
                 oraParams += (oraParams.Equals("") ? "" : " AND ") + "CHRONO >= :dtStart";
                 oraCmd.Parameters.Add(new OracleParameter("dtStart", epochStart));
                 oraCtCmd.Parameters.Add(new OracleParameter("dtStart", epochStart));
@@ -97,7 +99,7 @@ public partial class alarms_Default : System.Web.UI.Page
             else
             {
                 //double epochEnd = (double)1000 * ((int)(dtEnd - new DateTime(1970, 1, 1)).TotalSeconds);
-                long epochEnd = ((long)(dtEnd - new DateTime(1970, 1, 1)).TotalMilliseconds);
+                long epochEnd = ((long)(dtEnd.ToUniversalTime() - new DateTime(1970, 1, 1)).TotalMilliseconds);
 
                 oraParams += (oraParams.Equals("") ? "" : " AND ") + "CHRONO <= :dtEnd";
                 oraCmd.Parameters.Add(new OracleParameter("dtEnd", epochEnd));
