@@ -38,7 +38,7 @@
                         SelectCommandType="StoredProcedure" SelectCommand="uspPSPSites"
                     ></asp:SqlDataSource></td>
                 <td></td></tr>--%>
-            <tr><th>Time Range<br /><span style="font-weight:normal; font-size:small; font-style:italic;">(UTC)</span></th>
+            <tr><th>Time Range<br /><span style="font-weight:normal; font-size:small; font-style:italic;">(Pacific Time)</span></th>
                 <td colspan="1">
                     <asp:TextBox runat="server" ID="txtParamDTStart" Width="140" />
                     to
@@ -53,7 +53,7 @@
                         <asp:LinkButton runat="server" Text="3h"  onclick="lbtDTStart_Click" CommandArgument="3,h" /> |
                         <asp:LinkButton runat="server" Text="6h"  onclick="lbtDTStart_Click" CommandArgument="6,h" /> | <b>)</b>
                     </div>
-                </td><td>Start/end time in UTC.</td></tr>
+                </td><td>Start/end time in Pacific Time.</td></tr>
             <tr><th>Alarm List</th>
                 <td>
                     <asp:TextBox runat="server" ID="txtParamLogList" />
@@ -180,30 +180,30 @@
             <table class="tblResults">
                 <tr>
                     <th>Time</th>
-                    <th>Project</th>
-                    <th>Alarm List</th>
-                    <th>SATT 3</th>
+                    <th class="hide">Project</th>
+                    <th class="hide">Alarm List</th>
+                    <th >Turbine Name</th>
                     <th>Tag Name</th>
                     <th>Tag Description</th>
                     <th class="hide">Date</th>
-                    <th>Unit Name</th>
-                    <th>Var Type</th>
-                    <th>Priority</th>
-                    <th>N Val</th>
-                    <th>T Val</th>
-                    <th>Evt Type</th>
-                    <th>Evt Title</th>
-                    <th>Evt Text</th>
-                    <th>Comp Inf</th>
+                    <th class="hide">Unit Name</th>
+                    <th class="hide">Var Type</th>
+                    <th class="hide">Priority</th>
+                    <th >Value</th>
+                    <th class="hide">T Val</th>
+                    <th class="hide">Evt Type</th>
+                    <th Event </th>
+                    <th class="hide">Evt Text</th>
+                    <th class="hide">Comp Inf</th>
                     <th>User Name</th>
-                    <th>User Note</th>
-                    <th>TS Type</th>
+                    <th class="hide">User Note</th>
+                    <th class="hide">TS Type</th>
                     <td class="hide">TS Val</th>
-                    <th>BATT</th>
-                    <th>SATT 1</th>
-                    <th>SATT 2</th>
-                    <th>CDATT 8</th>
-                    <th>Station</th>
+                    <th class="hide">BATT</th>
+                    <th >Domain</th>
+                    <th >Nature</th>
+                    <th class="hide">CDATT 8</th>
+                    <th >Station</th>
 
                 </tr>
                 <asp:PlaceHolder runat="server" ID="itemPlaceholder" />
