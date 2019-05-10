@@ -180,8 +180,6 @@
             <table class="tblResults">
                 <tr>
                     <th>Time</th>
-                    <th class="hide">Project</th>
-                    <th class="hide">Alarm List</th>
                     <th >Turbine Name</th>
                     <th>Tag Name</th>
                     <th>Tag Description</th>
@@ -211,29 +209,30 @@
         </LayoutTemplate>
         <ItemTemplate>
             <tr>
-                <td class="nowrap"><%# fmtDateTime(epochToDateTime(Eval("CHRONO")))%></td>
+                <td class="nowrap"><%# fmtDateTime(epochToDateTime(Eval("Time")))%></td>
 <%--                <td><%# Eval("PROJECT") %></td>
-                <td><%# Eval("LOGLIST") %></td>
-                <td class="nowrap"><%# Eval("SATT3") %></td>--%>
-                <td class="nowrap"><%# Eval("NAME") %></td>
-                <td class="nowrap"><%# Eval("TITLE") %></td>
+                <td><%# Eval("LOGLIST") %></td>--%>
+                <td class="nowrap"><%# Eval("Turbine Name") %></td>
+                <td class="nowrap"><%# Eval("Tag Name") %></td>
+                <td class="nowrap"><%# Eval("Tag Description") %></td>
 <%--                <td><%# Eval("UNITNAME") %></td>
                 <td><%# Eval("VARTYPE") %></td>
                 <td><%# Eval("PRIORITY") == null ? "NULL" : (Eval("PRIORITY").GetType().Name == "DBNull" ? "null" : Eval("PRIORITY")) %></td>--%>
-                <td><%# Eval("NVAL") %></td>
+                <td><%# Eval("Value") %></td>
                <%-- <td><%# Eval("TVAL") %></td>
                 <td><%# Eval("EVTTYPE") %></td>
-                <td class="nowrap"><%# Eval("EVTTITLE") %></td>
-                <td><%# Eval("EVTTXT") %></td>
-                <td><%# Eval("COMPINF") %></td>--%>
-                <td><%# Eval("USERNAME") %></td>
+                   --%>
+                <td class="nowrap"><%# Eval("Event") %></td>
+                <%-- %><td><%# Eval("EVTTXT") %></td>--%>
+                <%--<td><%# Eval("COMPINF") %></td>--%>
+                <td><%# Eval("Username") %></td>
                 <%--<td><%# Eval("USERNOTE") %></td>
                 <td><%# Eval("TSTYPE") %></td>
-                <td><%# Eval("BATT") %></td>
-                <td><%# Eval("SATT1") %></td>
-                <td><%# Eval("SATT2") %></td>
-                <td><%# Eval("CDATT8") %></td>
-                <td><%# Eval("STATION") %></td>--%>
+                <td><%# Eval("BATT") %></td> --%>
+                <td><%# Eval("Domain") %></td>
+                <td><%# Eval("Nature") %></td>
+                <%-- %><td><%# Eval("CDATT8") %></td>--%>
+                <td><%# Eval("Station") %></td>
             </tr>
         </ItemTemplate>
         <EmptyDataTemplate>NoData</EmptyDataTemplate>
@@ -316,6 +315,7 @@
                     <obout:Column DataField="Filter_Field_Station"  HeaderText="Station"     />
                 </Columns>
             </obout:Grid>
+
             <asp:SqlDataSource runat="server" ID="SqlDataSource_FilterEditor"
                 ConnectionString="<%$ ConnectionStrings:ConnectionString_PDXSQL03_EMSWEB %>"
                 ProviderName="System.Data.SqlClient"

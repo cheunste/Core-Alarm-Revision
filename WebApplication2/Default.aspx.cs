@@ -19,7 +19,7 @@ public partial class alarms_Default : System.Web.UI.Page
     private DataTable dtAlarms;
     private DateTime epoch = new DateTime(1970, 1, 1);
     //The queryDict is a Dictionary that stores the Header (used to display to user) and the query name (used for the SQL portion)
-    private Dictionary<String,String> queryDict  = new Dictionary<String,String>();
+    private Dictionary<string,string> queryDict  = new Dictionary<string,string>();
 
     protected void Page_Load(object sender, EventArgs e)
     {
@@ -36,29 +36,40 @@ public partial class alarms_Default : System.Web.UI.Page
         {
             //noop
              //Add the  headers and the query columns to the dictionary
+            //queryDict.Add("Time", "CHRONO");
+            //queryDict.Add("Project", "PROJECT");
+            //queryDict.Add("Alarm List","LOGLIST");
+            //queryDict.Add("SATT 3", "SATT3");
+            //queryDict.Add("Tag Name","NAME");
+            //queryDict.Add("Description","TITLE");
+            //queryDict.Add("Unit Name", "UNITNAME");
+            //queryDict.Add("Var Type", "VARTYPE");
+            //queryDict.Add("Priority", "PRIORITY");
+            //queryDict.Add("Value", "NVAL");
+            //queryDict.Add("T Val", "TVAL");
+            //queryDict.Add("Evt Type", "EVTTYPE");
+            //queryDict.Add("Evt Title", "EVTITLE");
+            //queryDict.Add("Evt Text", "EVTTXT");
+            //queryDict.Add("Comp Inf","COMPINF");
+            //queryDict.Add("Username", "USERNAME");
+            //queryDict.Add("User Note", "USERNOTE");
+            //queryDict.Add("TS Type","TSTYPE");
+            //queryDict.Add("S Val", "SVAL");
+            //queryDict.Add("BATT","BATT");
+            //queryDict.Add("SATT 1", "SATT1");
+            //queryDict.Add("SATT 2", "SATT2");
+            //queryDict.Add("CDATT 8", "CDATT8");
+            //queryDict.Add("Station", "STATION");
+
             queryDict.Add("Time", "CHRONO");
-            queryDict.Add("Project", "PROJECT");
-            queryDict.Add("Alarm List","LOGLIST");
-            queryDict.Add("SATT 3", "SATT3");
+            queryDict.Add("Turbine Name", "SATT3");
             queryDict.Add("Tag Name","NAME");
-            queryDict.Add("Description","TITLE");
-            queryDict.Add("Unit Name", "UNITNAME");
-            queryDict.Add("Var Type", "VARTYPE");
-            queryDict.Add("Priority", "PRIORITY");
+            queryDict.Add("Tag Description","TITLE");
             queryDict.Add("Value", "NVAL");
-            queryDict.Add("T Val", "TVAL");
-            queryDict.Add("Evt Type", "EVTTYPE");
-            queryDict.Add("Evt Title", "EVTITLE");
-            queryDict.Add("Evt Text", "EVTTXT");
-            queryDict.Add("Comp Inf","COMPINF");
+            queryDict.Add("Event", "EVTTITLE");
             queryDict.Add("Username", "USERNAME");
-            queryDict.Add("User Note", "USERNOTE");
-            queryDict.Add("TS Type","TSTYPE");
-            queryDict.Add("S Val", "SVAL");
-            queryDict.Add("BATT","BATT");
-            queryDict.Add("SATT 1", "SATT1");
-            queryDict.Add("SATT 2", "SATT2");
-            queryDict.Add("CDATT 8", "CDATT8");
+            queryDict.Add("Domain", "SATT1");
+            queryDict.Add("Nature", "SATT2");
             queryDict.Add("Station", "STATION");
         }
         else
@@ -73,6 +84,7 @@ public partial class alarms_Default : System.Web.UI.Page
     protected void lnkParametersApply_Click(object sender, EventArgs e)
     {
         DataTable myDT = applyParameters();
+        ListView_Alarms.DataSource = this.queryDict;
         ListView_Alarms.DataSource = myDT;
         ListView_Alarms.DataBind();
         dtAlarms = myDT;
@@ -99,14 +111,15 @@ public partial class alarms_Default : System.Web.UI.Page
         //Build the plsql command.
         string oraParams = "";
         //string oraQry = "SELECT * FROM ALARMS";
-        Console.WriteLine(queryDict["Time"]);
-        string oraQry = "SELECT " 
-            + " "+queryDict["Time"] 
-            + ","+queryDict["Tag Name"]
-            + ","+queryDict["Description"]
-            + ","+queryDict["Value"]
-            + ","+queryDict["Username"]
-            +" FROM ALARMS";
+
+        //New Query in construction. Todo: Finsih this shit
+        string oraQry = "SELECT /*+PARALLEL(10)*/ ";
+        foreach(KeyValuePair<string,string> queryEntry in queryDict)
+        {
+            oraQry += queryEntry.Value+" AS \""+queryEntry.Key+"\",";
+        }
+        //remove the last comma from the string and then stap
+        oraQry=oraQry.TrimEnd(',')+" FROM HIS.ALARMS";
 
         string oraOrd = " ORDER BY CHRONO DESC";
         OracleCommand oraCmd = new OracleCommand();
@@ -200,7 +213,61 @@ public partial class alarms_Default : System.Web.UI.Page
 
         myDT = oraQueryTable(oraCmd, oraCstr);
 
-        return myDT;
+
+        return portQueryTableEdit(myDT);
+    }
+
+    /// <summary>
+    /// This function updates the time of the DataTable after queried from Oracle and update the  time to PT and the Station to  h
+    /// human readable format
+    /// </summary>
+    /// <param name="myDT"></param>
+    /// <returns>A modified DataTable with changes to Time and changes to Station </returns>
+    private DataTable portQueryTableEdit(DataTable myDT)
+    {
+        DataTable newTable = myDT.Clone();
+
+        int stationIndex = newTable.Columns.IndexOf("Station");
+        newTable.Columns.Remove("Station");
+        DataColumn newStationCol = newTable.Columns.Add("Station");
+        newStationCol.SetOrdinal(stationIndex);
+        Random random = new Random();
+        foreach (DataRow row in myDT.Rows)
+        {
+            DataRow newRow = newTable.Rows.Add();
+            //The station number should be changed so that the STATION should be a human readable value and not just a number.
+            //The time should be in Local time and not UTC
+            // If it is anything else, just ignore it
+            newRow.BeginEdit();
+            foreach(DataColumn col in newTable.Columns)
+            {
+                //If Time
+                if(col.ColumnName == "Time")
+                {
+                    Object temp = fmtDateTime(epochToDateTime(row[col.ColumnName]));
+                    DateTime temp2 = Convert.ToDateTime(temp);
+                    Response.Write(col.GetType());
+                    //row["Time"] = fmtDateTime(epochToDateTime(row["Time"]));
+                    newRow.SetField(col, temp2.ToLocalTime());
+                }
+
+                //If Station
+                if (col ==  newStationCol)
+                {
+                    string temp = random.Next(500, 900).ToString();
+                    newRow.SetField(col, temp);
+
+                    //newRow.SetField(col, row[col.ColumnName]);
+                }
+                else
+                {
+                    newRow.SetField(col, row[col.ColumnName]);
+                }
+            }
+            newRow.AcceptChanges();
+        }
+        return newTable;
+
     }
 
     private enum FilterMode { Exclude = 0, Include = 1 };
