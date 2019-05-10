@@ -13,13 +13,82 @@ using Oracle.ManagedDataAccess.Client;
 using System.Text.RegularExpressions;
 using System.IO;
 
+// This is a class that's used to essentually map a computer name, with a node number and a sitename and god knows what else
+public class SiteStructure
+{
+    private string computerName;
+    private int nodeNumber;
+    private string siteName;
+    private string[] sitePrefix;
+
+    public SiteStructure(string computerName, int nodeNumber, string siteName, string[] sitePrefix)
+    {
+        this.computerName = computerName;
+        this.nodeNumber = nodeNumber;
+        this.siteName = siteName;
+        this.sitePrefix = sitePrefix;
+
+    }
+
+    public string getComputerName{get;}
+    public int getNodeNumber{get;}
+    public string getSiteName{get;}
+    public string[] getSitePrefix{get;}
+}
+
+public static class SiteFactory
+{
+    private static List<SiteStructure> siteList = new List<SiteStructure>();
+    private static Dictionary<int, string> siteCacheDict = new Dictionary<int, string>();
+
+    public static void createNewSite(string computerName, int nodeNumber, string siteName, string[] sitePrefix)
+    {
+            SiteStructure s = new SiteStructure(computerName,nodeNumber,siteName,sitePrefix);
+            siteList.Add(s);
+    }
+
+    /// <summary>
+    /// Get a machien Host name given a node number and a site prefix. This is an attempt to solve the Shiloh/Ottercreek node number problem
+    /// </summary>
+    /// <returns>String: Computer name </returns>
+    public static string getComputerName(int nodeNumber, string sitePrefix) 
+    {
+        //If the computer name is already in a cache, then just return it given the node number
+        if(siteCacheDict.Count != 0)
+        {
+            string computerNameInDict = "";
+            if (siteCacheDict.TryGetValue(nodeNumber,out computerNameInDict))
+            {
+                return computerNameInDict;
+            }
+
+        }
+        //Loop through each created SiteStsturcre and see if the node number and the site prefix matches to the provided ones
+        foreach(SiteStructure site in siteList)
+        {
+            //If the node numbermatches the the site prefix matches that of the 
+            if((site.getNodeNumber == nodeNumber) && (Array.IndexOf(site.getSitePrefix,sitePrefix) > -1))
+            {
+                //Throw the nodeNumber  and the computername into a dictionary for quicker access
+                siteCacheDict.Add(site.getNodeNumber, site.getComputerName);
+
+                //Return the value to the user
+                return site.getComputerName;
+            }
+
+        }
+
+        //REaching here is bad. This means that the Node Number isn't provided in the list you were given
+        return "Unknwon Machine Name";
+    }
+}
 public partial class alarms_Default : System.Web.UI.Page
 {
 
     private DataTable dtAlarms;
     private DateTime epoch = new DateTime(1970, 1, 1);
     //The queryDict is a Dictionary that stores the Header (used to display to user) and the query name (used for the SQL portion)
-    private Dictionary<string,string> queryDict  = new Dictionary<string,string>();
+    private Dictionary<string, string> queryDict = new Dictionary<string, string>();
 
     protected void Page_Load(object sender, EventArgs e)
     {
