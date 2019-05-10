@@ -214,7 +214,7 @@ public partial class alarms_Default : System.Web.UI.Page
         myDT = oraQueryTable(oraCmd, oraCstr);
 
 
-        return portQueryTableEdit(myDT);
+        return postQueryTabl(myDT);
     }
 
     /// <summary>
@@ -223,14 +223,22 @@ public partial class alarms_Default : System.Web.UI.Page
     /// </summary>
     /// <param name="myDT"></param>
     /// <returns>A modified DataTable with changes to Time and changes to Station </returns>
-    private DataTable portQueryTableEdit(DataTable myDT)
+    private DataTable postQueryTabl(DataTable myDT)
     {
         DataTable newTable = myDT.Clone();
+        string TIME_COL = "Time";
+        string STATION_COL = "Station";
 
-        int stationIndex = newTable.Columns.IndexOf("Station");
-        newTable.Columns.Remove("Station");
-        DataColumn newStationCol = newTable.Columns.Add("Station");
+        int stationIndex = newTable.Columns.IndexOf(STATION_COL);
+        newTable.Columns.Remove(STATION_COL);
+        DataColumn newStationCol = newTable.Columns.Add(STATION_COL);
         newStationCol.SetOrdinal(stationIndex);
+
+        int timeIndex = newTable.Columns.IndexOf(TIME_COL);
+        newTable.Columns.Remove(TIME_COL);
+        DataColumn newTimeCol = newTable.Columns.Add(TIME_COL);
+        newTimeCol.SetOrdinal(timeIndex);
+
         Random random = new Random();
         foreach (DataRow row in myDT.Rows)
         {
@@ -241,18 +249,15 @@ public partial class alarms_Default : System.Web.UI.Page
             newRow.BeginEdit();
             foreach(DataColumn col in newTable.Columns)
             {
-                //If Time
-                if(col.ColumnName == "Time")
+                //If Time. This should be in local pacific  time
+                if(col == newTimeCol)
                 {
-                    Object temp = fmtDateTime(epochToDateTime(row[col.ColumnName]));
-                    DateTime temp2 = Convert.ToDateTime(temp);
-                    Response.Write(col.GetType());
-                    //row["Time"] = fmtDateTime(epochToDateTime(row["Time"]));
-                    newRow.SetField(col, temp2.ToLocalTime());
+                    Object temp = fmtDateTime(epochToDateTime(row[col.ColumnName]).ToLocalTime());
+                    newRow.SetField(col, temp);
                 }
 
-                //If Station
-                if (col ==  newStationCol)
+                //If Station. This should be in a machine name format
+                else if (col ==  newStationCol)
                 {
                     string temp = random.Next(500, 900).ToString();
                     newRow.SetField(col, temp);

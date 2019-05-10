@@ -209,7 +209,7 @@
         </LayoutTemplate>
         <ItemTemplate>
             <tr>
-                <td class="nowrap"><%# fmtDateTime(epochToDateTime(Eval("Time")))%></td>
+                <td class="nowrap"><%# Eval("Time")%></td>
 <%--                <td><%# Eval("PROJECT") %></td>
                 <td><%# Eval("LOGLIST") %></td>--%>
                 <td class="nowrap"><%# Eval("Turbine Name") %></td>
