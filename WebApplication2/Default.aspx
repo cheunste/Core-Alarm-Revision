@@ -135,9 +135,22 @@
                 </td>
                 <td>List of alarms. (e.g., plant)</td></tr>
             <tr><th>Tag</th>
-                <td><asp:TextBox runat="server" ID="txtParamName" Width="250"    /></td>
-                <td>Uses SQL-style syntax: % for multi-character wildcard, _ for single-character wildcard.<br />
-                    This parameter is very processor-intensive, so use it sparingly.</td></tr>
+                <td>
+                    <asp:TextBox runat="server" ID="txtParamName" Width="250"    />
+                    <br />
+                    <asp:RadioButtonList ID="coreSearchOption" runat="server">
+                        <asp:ListItem Text="Search by Tag Name" Value="name" Selected="True"/>
+                        <asp:ListItem Text="Search by Tag Desc" Value="desc" />
+                    </asp:RadioButtonList>
+
+                </td>
+                <td>
+                    Uses SQL-style syntax: % for multi-character wildcard, _ for single-character wildcard.<br />
+                    This parameter is very processor-intensive, so use it sparingly. <br />
+                    Ex: 'BIGHO.%' Search for all CORE tags that start w/ 'BIGHO' such as BIGHO.A099.Gen.IntVenGenAct <br />
+                    Ex: <b>'%.ST.%'</b> Search for <u>all substation tags in the fleet</u>. <br />
+
+                </td></tr>
           
         </tbody>
         <tfoot>

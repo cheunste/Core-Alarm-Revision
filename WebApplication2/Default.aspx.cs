@@ -51,6 +51,35 @@ public static class SiteFactory
         siteCacheDict.Clear();
     }
 
+    public static string getComputerName(int nodeNumber)
+    {
+
+        //If the computer name is already in a cache, then just return it given the node number
+        if(siteCacheDict.Count != 0)
+        {
+            string computerNameInDict = "";
+            if (siteCacheDict.TryGetValue(nodeNumber,out computerNameInDict))
+            {
+                return computerNameInDict;
+            }
+        }
+        //Loop through each created SiteStsturcre and see if the node number and the site prefix matches to the provided ones
+        foreach(SiteStructure site in siteList)
+        {
+            //Only one check in this method. If it isn't equal, then you're SOL
+            if(site.nodeNumber == nodeNumber) 
+            {
+                //Throw the nodeNumber  and the computername into a dictionary for quicker access
+                siteCacheDict.Add(site.nodeNumber, site.computerName);
+                //Return the value to the user
+                return site.computerName;
+            }
+        }
+
+        //REaching here is kinda bad. This means that the Node Number isn't provided in the list you were given...or incomplete condition
+        return nodeNumber.ToString();
+    }
+
     /// <summary>
     /// Get a machien Host name given a node number and a site prefix. Note that the prefix should be used iff the Node Number returns multiple Machine Names.
     /// This is an attempt to solve the Shiloh/Ottercreek node number problem
@@ -135,10 +164,45 @@ public partial class alarms_Default : System.Web.UI.Page
             //queryDict.Add("CDATT 8", "CDATT8");
             //queryDict.Add("Station", "STATION");
 
+        }
+        else
+        {
+            resetParameters();
+        }
+    }
+    protected void lnkParametersReset_Click(object sender, EventArgs e)
+    {
+        resetParameters();
+    }
+    protected void lnkParametersApply_Click(object sender, EventArgs e)
+    {
+        DataTable myDT = applyParameters();
+        ListView_Alarms.DataSource = this.queryDict;
+        ListView_Alarms.DataSource = myDT;
+        ListView_Alarms.DataBind();
+        dtAlarms = myDT;
+        lblAlarms.Text = "Alarms Returned: " + ListView_Alarms.Items.Count;
+        if (myDT != null)
+            myDT.Dispose();
+    }
+    protected void lnkParametersCSV_Click(object sender, EventArgs e)
+    {
+        DataTable myDT = applyParameters();
+        if (myDT != null)
+        {
+            string fileName = "OracleAlarms_";
+            fileName = fileName + DateTime.Now.ToString("yyyyMMdd-HHmmss");
+            //fileName = fileName + (txtParamFilter.Text != "" ? "_FILTERED" : "");
+            fileName = fileName + ".xls";
+            exportToCSV(myDT, fileName);
+        }
+    }
+    private void buildDictionaries()
+    {
             queryDict.Add("Time", "CHRONO");
             queryDict.Add("Turbine Name", "SATT3");
             queryDict.Add("Tag Name","NAME");
-            queryDict.Add("Alarm List","LOGLIST");
+            queryDict.Add("AlarmList","LOGLIST");
             queryDict.Add("Tag Description","TITLE");
             queryDict.Add("Value", "NVAL");
             queryDict.Add("Event", "EVTTITLE");
@@ -309,42 +373,20 @@ public partial class alarms_Default : System.Web.UI.Page
             SiteFactory.createNewSite("WB1-SV-UCC1",2,"Winnebago",new string[]{"WINNE"});
             SiteFactory.createNewSite("WB1-SV-UCC2",52,"Winnebago",new string[]{"WINNE"});
             SiteFactory.createNewSite("KL1-WYEAST-UCC",250,"Wyeast",new string[]{"WYEAS"});
-        }
-        else
-        {
-            resetParameters();
-        }
     }
-    protected void lnkParametersReset_Click(object sender, EventArgs e)
+    private void clearDictionaries()
     {
-        resetParameters();
-    }
-    protected void lnkParametersApply_Click(object sender, EventArgs e)
-    {
-        DataTable myDT = applyParameters();
-        ListView_Alarms.DataSource = this.queryDict;
-        ListView_Alarms.DataSource = myDT;
-        ListView_Alarms.DataBind();
-        dtAlarms = myDT;
-        lblAlarms.Text = "Alarms Returned: " + ListView_Alarms.Items.Count;
-        if (myDT != null)
-            myDT.Dispose();
-    }
-    protected void lnkParametersCSV_Click(object sender, EventArgs e)
-    {
-        DataTable myDT = applyParameters();
-        if (myDT != null)
-        {
-            string fileName = "OracleAlarms_";
-            fileName = fileName + DateTime.Now.ToString("yyyyMMdd-HHmmss");
-            //fileName = fileName + (txtParamFilter.Text != "" ? "_FILTERED" : "");
-            fileName = fileName + ".xls";
-            exportToCSV(myDT, fileName);
-        }
+        queryDict.Clear();
+        SiteFactory.clearSiteCache();
     }
     private DataTable applyParameters()
     {
         DataTable myDT = new DataTable(); //Temporary table to bind ListView to.
+
+        string searchOption = coreSearchOption.SelectedValue;
+
+        //Build the dictionaries 
+        buildDictionaries();
 
         //Build the plsql command.
         string oraParams = "";
@@ -451,8 +493,8 @@ public partial class alarms_Default : System.Web.UI.Page
 
         myDT = oraQueryTable(oraCmd, oraCstr);
 
-
-        return postQueryTable(myDT);
+        clearDictionaries();
+        return postTableQueryEdits(myDT);
     }
 
     /// <summary>
@@ -461,12 +503,13 @@ public partial class alarms_Default : System.Web.UI.Page
     /// </summary>
     /// <param name="myDT"></param>
     /// <returns>A modified DataTable with changes to Time and changes to Station </returns>
-    private DataTable postQueryTable(DataTable myDT)
+    private DataTable postTableQueryEdits(DataTable myDT)
     {
         DataTable newTable = myDT.Clone();
         string TIME_COL = "Time";
         string STATION_COL = "Station";
         string DOMAIN_COL = "Domain";
+        string ALARM_LIST_COL = "AlarmList";
 
         int stationIndex = newTable.Columns.IndexOf(STATION_COL);
         newTable.Columns.Remove(STATION_COL);
@@ -498,14 +541,17 @@ public partial class alarms_Default : System.Web.UI.Page
                 //If Station. This should be in a machine name format
                 else if (col ==  newStationCol)
                 {
-                    //Get the Site prefix. This is more fore reassurance
+                    //Get the Site prefix from the Domain Column. Note that not all alarm will have a Domain or a nature
                     string sitePrefix = row[DOMAIN_COL].ToString();
 
-                    //Get the site ID
+                    //Get the site ID from the STATION Column
                     int siteID = Convert.ToInt16(row[STATION_COL]);
 
-                    string temp =SiteFactory.getComputerName(siteID, sitePrefix);
-                    //string temp = random.Next(500, 900).ToString();
+                    //Get the Alarm List column from the Alarm Column. This is only used for matching the Front Ends.
+                    string alarmListName = row[ALARM_LIST_COL].ToString();
+
+                    string temp = "";
+                    temp = SiteFactory.getComputerName(siteID);
                     newRow.SetField(col, temp);
                 }
                 else
@@ -515,6 +561,8 @@ public partial class alarms_Default : System.Web.UI.Page
             }
             newRow.AcceptChanges();
         }
+        //Drop the alarms list column (as Victor doesn't want it
+        newTable.Columns.Remove(ALARM_LIST_COL);
         return newTable;
 
     }
@@ -1081,8 +1129,6 @@ public partial class alarms_Default : System.Web.UI.Page
         {
 
         }
-
-
         return DateTime.Now;
     }
 }

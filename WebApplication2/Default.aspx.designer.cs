@@ -66,6 +66,15 @@ public partial class alarms_Default {
     protected global::System.Web.UI.WebControls.TextBox txtParamName;
     
     /// <summary>
+    /// coreSearchOption control.
+    /// </summary>
+    /// <remarks>
+    /// Auto-generated field.
+    /// To modify move field declaration from designer file to code-behind file.
+    /// </remarks>
+    protected global::System.Web.UI.WebControls.RadioButtonList coreSearchOption;
+    
+    /// <summary>
     /// lnkParametersApply control.
     /// </summary>
     /// <remarks>
