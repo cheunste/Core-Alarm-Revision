@@ -120,6 +120,8 @@ public partial class alarms_Default : System.Web.UI.Page
 
     private DataTable dtAlarms;
     private DateTime epoch = new DateTime(1970, 1, 1);
+    //Contants
+    private string NAME_OPTION = "name";
     //The queryDict is a Dictionary that stores the Header (used to display to user) and the query name (used for the SQL portion)
     private Dictionary<string, string> queryDict = new Dictionary<string, string>();
 
@@ -459,8 +461,21 @@ public partial class alarms_Default : System.Web.UI.Page
         //PARAMETER: NAME
         if (!txtParamName.Text.Equals(""))
         {
-            oraParams += (oraParams.Equals("") ? "" : " AND ") + "lower(NAME) LIKE lower(:tagname)";
-            oraCmd.Parameters.Add(new OracleParameter("tagname", txtParamName.Text));
+            // If the user selected to search by tag name 
+            if (coreSearchOption.Equals(NAME_OPTION))
+            {
+                oraParams += (oraParams.Equals("") ? "" : " AND ") + "lower(NAME) LIKE lower(:tagname)";
+                oraCmd.Parameters.Add(new OracleParameter("tagname", txtParamName.Text));
+            }
+            // If the user decided to search by description 
+            else{
+
+                oraParams += (oraParams.Equals("") ? "" : " AND ") + "lower(TITLE) LIKE lower(:tagname)";
+                oraCmd.Parameters.Add(new OracleParameter("tagname", txtParamName.Text));
+            }
+
+            //oraParams += (oraParams.Equals("") ? "" : " AND ") + "lower(NAME) LIKE lower(:tagname)";
+            //oraCmd.Parameters.Add(new OracleParameter("tagname", txtParamName.Text));
         }
 
         //PARAMETER: SATT3
