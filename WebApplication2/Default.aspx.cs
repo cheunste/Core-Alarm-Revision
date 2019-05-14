@@ -873,6 +873,8 @@ public partial class alarms_Default : System.Web.UI.Page
         clearTextFields();
        //Local Time format
         txtParamDTEnd.Text = DateTime.Now.AddMinutes(-1).ToString("yyyy-MM-dd HH:mm:ss");
+
+        txtParamLogList.Text = "Baffin Bay";
         //txtParamDTStart.Text = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
 
         //txtParamDTEnd.Text = DateTime.Now.AddHours(8).ToString("yyyy-MM-dd HH:mm:ss");

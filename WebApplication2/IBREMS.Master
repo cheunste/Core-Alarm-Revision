@@ -19,7 +19,7 @@
         <tbody>
             <tr>
                 <th>
-                    <a href="/"><img id="Img1" runat="server" src="~/_images/iri-logo-horizontal.png" alt="Iberdrola Renewables" title="Iberdrola Renewables" border="0" /></a>
+                    <%--<a href="/"><img id="Img1" runat="server" src="~/_images/iri-logo-horizontal.png" alt="Iberdrola Renewables" title="Iberdrola Renewables" border="0" /></a>--%>
                 </th>
                 <td>
                     <span class="header">Commercial Operations Tools</span>
