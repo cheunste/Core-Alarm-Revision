@@ -402,8 +402,7 @@ public partial class alarms_Default : System.Web.UI.Page
         string oraParams = "";
         //string oraQry = "SELECT * FROM ALARMS";
 
-        //New Query in construction. Todo: Finsih this shit
-        string oraQry = "SELECT /*+PARALLEL(10)*/ ";
+        string oraQry = "SELECT /*+PARALLEL(20)*/ ";
         foreach(KeyValuePair<string,string> queryEntry in queryDict)
         {
             oraQry += queryEntry.Value+" AS \""+queryEntry.Key+"\",";
@@ -424,8 +423,6 @@ public partial class alarms_Default : System.Web.UI.Page
             }
             else
             {
-                //double epochStart = (double)1000 * ((int)(dtStart - new DateTime(1970, 1, 1)).TotalSeconds);
-                //long epochStart = ((long)(dtStart - new DateTime(1970, 1, 1)).TotalMilliseconds);
                 long epochStart = ((long)(dtStart.ToUniversalTime() - new DateTime(1970, 1, 1)).TotalMilliseconds);
                 Console.WriteLine("EpochStart: " + epochStart);
                 oraParams += (oraParams.Equals("") ? "" : " AND ") + "CHRONO >= :dtStart";
@@ -894,8 +891,7 @@ public partial class alarms_Default : System.Web.UI.Page
         buildDictionaries();
 
         //Clear the ListView
-        dtAlarms = null;
-        ListView_Alarms.DataSource = null;
+        ListView_Alarms.DataSource = "";
         ListView_Alarms.DataBind();
         List<String> siteList = new List<string>();
         foreach (SiteStructure site  in SiteFactory.getSiteList())
