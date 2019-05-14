@@ -69,7 +69,7 @@
                     </asp:DropDownList>
 
                     <!-- Old -->
-                    <asp:DropDownList runat="server" ID="ddlParamLogList" OnSelectedIndexChanged="ddlParamLogList_SelectedIndexChanged" AutoPostBack="true">
+                    <%--<asp:DropDownList runat="server" ID="ddlParamLogList" OnSelectedIndexChanged="ddlParamLogList_SelectedIndexChanged" AutoPostBack="true">
                         <asp:ListItem Text="(All)" Value="" Selected="True" />
                         <asp:ListItem Text="ALMBART1" />    
                         <asp:ListItem Text="ALMBART2" />    
@@ -132,7 +132,7 @@
                         <asp:ListItem Text="PENE1" />       
                         <asp:ListItem Text="PENE2" />       
                         <asp:ListItem Text="PENE3" /> 
-                    </asp:DropDownList>
+                    </asp:DropDownList>--%>
                 </td>
                 <td>List of alarms. (e.g., plant)</td></tr>
             <tr><th>Tag</th>
@@ -207,7 +207,7 @@
                     <th >Value</th>
                     <th class="hide">T Val</th>
                     <th class="hide">Evt Type</th>
-                    <th Event </th>
+                    <th >Event </th>
                     <th class="hide">Evt Text</th>
                     <th class="hide">Comp Inf</th>
                     <th>User Name</th>

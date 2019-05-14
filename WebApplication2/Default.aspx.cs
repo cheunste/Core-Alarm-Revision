@@ -12,6 +12,7 @@ using System.Data.Linq;
 using Oracle.ManagedDataAccess.Client;
 using System.Text.RegularExpressions;
 using System.IO;
+using System.Collections.Generic;
 
 // This is a class that's used to essentually map a computer name, with a node number and a sitename and god knows what else
 public class SiteStructure
@@ -36,11 +37,22 @@ public static class SiteFactory
 {
     private static List<SiteStructure> siteList = new List<SiteStructure>();
     private static Dictionary<int, string> siteCacheDict = new Dictionary<int, string>();
+    private static Dictionary<string, string[]> sitePrefixDict = new Dictionary<string, string[]>();
 
     public static void createNewSite(string computerName, int nodeNumber, string siteName, string[] sitePrefix)
     {
-            SiteStructure s = new SiteStructure(computerName,nodeNumber,siteName,sitePrefix);
-            siteList.Add(s);
+
+        SiteStructure s = new SiteStructure(computerName,nodeNumber,siteName,sitePrefix);
+        //Oddly enough, I can't adccess Dictionary.TryAdd() method
+        try
+        {
+            sitePrefixDict.Add(siteName, sitePrefix);
+        }
+        catch (Exception e)
+        {
+            //Ignore exception
+        }
+        siteList.Add(s);
     }
 
     /// <summary>
@@ -53,6 +65,12 @@ public static class SiteFactory
     public static List<SiteStructure> getSiteList()
     {
         return siteList;
+    }
+    public static string[] getPrefixFromSiteName(string siteName)
+    {
+        string[] sitePrefixes = { };
+        sitePrefixDict.TryGetValue(siteName, out sitePrefixes);
+        return sitePrefixes;
     }
 
     public static string getComputerName(int nodeNumber)
@@ -444,8 +462,38 @@ public partial class alarms_Default : System.Web.UI.Page
         //PARAMETER: LOGLIST
         if (!txtParamLogList.Text.Equals(""))
         {
-            oraParams += (oraParams.Equals("") ? "" : " AND ") + "LOGLIST = :loglist";
-            oraCmd.Parameters.Add(new OracleParameter("loglist", "ALM"+txtParamLogList.Text));
+            //oraParams += (oraParams.Equals("") ? "" : " AND ") + "LOGLIST = :loglist";
+            //use a dictionary to get the ALMLOGLIST from the site Name
+            //oraCmd.Parameters.Add(new OracleParameter("loglist", "ALM"+txtParamLogList.Text));
+
+            //Get the site prefixe(s) from the site name
+            string []prefix = SiteFactory.getPrefixFromSiteName(txtParamLogList.Text);
+
+            //For single sites (Copper X-ing, Wyeast, etc.)
+            if(prefix.Length == 1)
+            {
+                oraParams += (oraParams.Equals("") ? "" : " AND ") + "LOGLIST = :loglist";
+                //oraCmd.Parameters.Add(new OracleParameter("loglist", "ALM"+txtParamLogList.Text));
+                oraCmd.Parameters.Add(new OracleParameter("loglist", "ALM" + prefix[0]));
+            }
+            //For sites with multiple sub sites (Klondike [KA,K3, etc], Baffin Bay [BB1,BB2], etc.)
+            //In this particular case, it is a bad idea to use Oracle cmd substitution. You're better off "hard coding it"
+            else
+            {
+
+                //Hard code the first site...this is unavoidable
+                oraParams += (oraParams.Equals("") ? "" : " AND ") + "(LOGLIST = " + "'ALM"+prefix[0]+"'";
+                //Loop through the rest. NOte that you might have a double prefix inserted, but I don't think that matters too much
+                foreach(string subSite in prefix.Skip(1))
+                {
+                    oraParams += " OR LOGLIST = " + "'ALM"+subSite+"'";
+
+                }
+                oraParams += ")";
+                //oraParams += (oraParams.Equals("") ? "" : " AND ") + "LOGLIST = :loglist";
+                //oraCmd.Parameters.Add(new OracleParameter("loglist", "ALM"+txtParamLogList.Text));
+            }
+
         }
 
         //PARAMETER: NAME
@@ -846,17 +894,14 @@ public partial class alarms_Default : System.Web.UI.Page
         buildDictionaries();
 
         //Clear the ListView
+        dtAlarms = null;
         ListView_Alarms.DataSource = null;
         ListView_Alarms.DataBind();
-
         List<String> siteList = new List<string>();
         foreach (SiteStructure site  in SiteFactory.getSiteList())
         {
-            foreach(String prefix in site.sitePrefix)
-            {
-                siteList.Add(prefix);
-            }
-
+            if(!siteList.Contains(site.siteName))
+                siteList.Add(site.siteName);
         }
 
         //Rebind the siteList to the dropdown list
