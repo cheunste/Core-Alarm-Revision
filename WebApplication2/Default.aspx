@@ -62,7 +62,8 @@
                         id="SiteDropDownList"
                         AutoPostBack="true"
                         runat="server"
-                        OnSelectedINdexChanged="ddlParamLogList_SelectedIndexChanged">
+                        OnSelectedIndexChanged="ddlParamLogList_SelectedIndexChanged" 
+                        >
 
 
                     </asp:DropDownList>
@@ -147,8 +148,11 @@
                 <td>
                     Uses SQL-style syntax: % for multi-character wildcard, _ for single-character wildcard.<br />
                     This parameter is very processor-intensive, so use it sparingly. <br />
-                    Ex: 'BIGHO.%' Search for all CORE tags that start w/ 'BIGHO' such as BIGHO.A099.Gen.IntVenGenAct <br />
+                    <b>Search by Tag Desc MUST use wildcard %</b>
+                    <br />
+                    Ex: <b>'BIGHO.%'</b> Search for all CORE tags that start w/ 'BIGHO' such as BIGHO.A099.Gen.IntVenGenAct <br />
                     Ex: <b>'%.ST.%'</b> Search for <u>all substation tags in the fleet</u>. <br />
+                    Ex: <b>'%HUB%'</b> If used with <u>Search by Tag Desc</u>, this will find out all tag(s) with 'HUB' in the description<br />
 
                 </td></tr>
           
