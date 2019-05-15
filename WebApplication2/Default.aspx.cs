@@ -173,7 +173,7 @@ public partial class alarms_Default : System.Web.UI.Page
 
     //Contants
     private string NAME_OPTION = "name";
-    private int TWO_MONTH_TIME_LIMIT = 5184000;
+    private long TWO_MONTH_TIME_LIMIT = 5184000000;
 
     //The queryDict is a Dictionary that stores the Header (used to display to user) and the query name (used for the SQL portion)
     private Dictionary<string, string> queryDict = new Dictionary<string, string>();
