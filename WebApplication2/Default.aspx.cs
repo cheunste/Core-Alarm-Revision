@@ -27,10 +27,10 @@ public class SiteStructure
 
     }
 
-    public string computerName{ get; set; }
-    public int nodeNumber{ get; set; }
-    public string siteName{ get; set;  }
-    public string[] sitePrefix{ get; set; }
+    public string computerName { get; set; }
+    public int nodeNumber { get; set; }
+    public string siteName { get; set; }
+    public string[] sitePrefix { get; set; }
 }
 
 public static class SiteFactory
@@ -38,11 +38,12 @@ public static class SiteFactory
     private static List<SiteStructure> siteList = new List<SiteStructure>();
     private static Dictionary<int, string> siteCacheDict = new Dictionary<int, string>();
     private static Dictionary<string, string[]> sitePrefixDict = new Dictionary<string, string[]>();
+    private static Dictionary<string, string> specialFilter = new Dictionary<string, string>();
 
     public static void createNewSite(string computerName, int nodeNumber, string siteName, string[] sitePrefix)
     {
 
-        SiteStructure s = new SiteStructure(computerName,nodeNumber,siteName,sitePrefix);
+        SiteStructure s = new SiteStructure(computerName, nodeNumber, siteName, sitePrefix);
         //Oddly enough, I can't adccess Dictionary.TryAdd() method
         try
         {
@@ -56,11 +57,38 @@ public static class SiteFactory
     }
 
     /// <summary>
-    /// Clears the SiteFactory's cache
+    /// Create a filter. Takes a name of a filter and its respective SQL query command string 
     /// </summary>
-    public static void clearSiteCache()
+    /// <param name="filterName">Name of the filter</param>
+    /// <param name="command">The SQL command. There must be NO SPACES before and after the command</param>
+    public static void createNewFilter(string filterName, string command)
+    {
+        try
+        {
+            specialFilter.Add(filterName, " " + command + " ");
+        }
+        catch(Exception e)
+        {
+
+        }
+    }
+
+    /// <summary>
+    /// REturn the dictioary of special filters created by createNewFilter function 
+    /// </summary>
+    /// <returns></returns>
+    public static Dictionary<string, string> getFilters()
+    {
+        return specialFilter;
+    }
+
+    /// <summary>
+    /// Clear all dictionaries in the class
+    /// </summary>
+    public static void clearDictionaries()
     {
         siteCacheDict.Clear();
+        specialFilter.Clear();
     }
     public static List<SiteStructure> getSiteList()
     {
@@ -77,19 +105,19 @@ public static class SiteFactory
     {
 
         //If the computer name is already in a cache, then just return it given the node number
-        if(siteCacheDict.Count != 0)
+        if (siteCacheDict.Count != 0)
         {
             string computerNameInDict = "";
-            if (siteCacheDict.TryGetValue(nodeNumber,out computerNameInDict))
+            if (siteCacheDict.TryGetValue(nodeNumber, out computerNameInDict))
             {
                 return computerNameInDict;
             }
         }
         //Loop through each created SiteStsturcre and see if the node number and the site prefix matches to the provided ones
-        foreach(SiteStructure site in siteList)
+        foreach (SiteStructure site in siteList)
         {
             //Only one check in this method. If it isn't equal, then you're SOL
-            if(site.nodeNumber == nodeNumber) 
+            if (site.nodeNumber == nodeNumber)
             {
                 //Throw the nodeNumber  and the computername into a dictionary for quicker access
                 siteCacheDict.Add(site.nodeNumber, site.computerName);
@@ -107,24 +135,24 @@ public static class SiteFactory
     /// This is an attempt to solve the Shiloh/Ottercreek node number problem
     /// </summary>
     /// <returns>String: Computer name </returns>
-    public static string getComputerName(int nodeNumber, string sitePrefix) 
+    public static string getComputerName(int nodeNumber, string sitePrefix)
     {
         //If the computer name is already in a cache, then just return it given the node number
-        if(siteCacheDict.Count != 0)
+        if (siteCacheDict.Count != 0)
         {
             string computerNameInDict = "";
-            if (siteCacheDict.TryGetValue(nodeNumber,out computerNameInDict))
+            if (siteCacheDict.TryGetValue(nodeNumber, out computerNameInDict))
             {
                 return computerNameInDict;
             }
 
         }
         //Loop through each created SiteStsturcre and see if the node number and the site prefix matches to the provided ones
-        foreach(SiteStructure site in siteList)
+        foreach (SiteStructure site in siteList)
         {
             //If the Prefx is null, then that means it s a FE or 
             //If the node numbermatches the the site prefix matches that of the 
-            if(site.sitePrefix == null || ((site.nodeNumber == nodeNumber) && (Array.IndexOf(site.sitePrefix,sitePrefix) > -1)))
+            if (site.sitePrefix == null || ((site.nodeNumber == nodeNumber) && (Array.IndexOf(site.sitePrefix, sitePrefix) > -1)))
             {
                 //Throw the nodeNumber  and the computername into a dictionary for quicker access
                 siteCacheDict.Add(site.nodeNumber, site.computerName);
@@ -142,8 +170,11 @@ public partial class alarms_Default : System.Web.UI.Page
 
     private DataTable dtAlarms;
     private DateTime epoch = new DateTime(1970, 1, 1);
+
     //Contants
     private string NAME_OPTION = "name";
+    private int TWO_MONTH_TIME_LIMIT = 5184000;
+
     //The queryDict is a Dictionary that stores the Header (used to display to user) and the query name (used for the SQL portion)
     private Dictionary<string, string> queryDict = new Dictionary<string, string>();
 
@@ -154,7 +185,7 @@ public partial class alarms_Default : System.Web.UI.Page
         if (Page.IsPostBack)
         {
             //noop
-                    }
+        }
 
         //If page is loaded for the first time
         else
@@ -173,9 +204,11 @@ public partial class alarms_Default : System.Web.UI.Page
         ListView_Alarms.DataSource = myDT;
         ListView_Alarms.DataBind();
         dtAlarms = myDT;
-        lblAlarms.Text = "Alarms Returned: " + ListView_Alarms.Items.Count;
         if (myDT != null)
+        {
+            lblAlarms.Text = "Alarms Returned: " + ListView_Alarms.Items.Count;
             myDT.Dispose();
+        }
     }
     protected void lnkParametersCSV_Click(object sender, EventArgs e)
     {
@@ -206,9 +239,9 @@ public partial class alarms_Default : System.Web.UI.Page
         //The queryDict creats a dictionary that maps a user friendly name (Victor made this up) to the column name in the Oracle Database
         queryDict.Add("Time", "CHRONO");
         queryDict.Add("Turbine Name", "SATT3");
-        queryDict.Add("Tag Name","NAME");
-        queryDict.Add("AlarmList","LOGLIST");
-        queryDict.Add("Tag Description","TITLE");
+        queryDict.Add("Tag Name", "NAME");
+        queryDict.Add("AlarmList", "LOGLIST");
+        queryDict.Add("Tag Description", "TITLE");
         queryDict.Add("Value", "NVAL");
         queryDict.Add("Event", "EVTTITLE");
         queryDict.Add("Username", "USERNAME");
@@ -218,168 +251,174 @@ public partial class alarms_Default : System.Web.UI.Page
 
         //This is where you add a new site. Although this method is for creating new dictionaries, this is actually creating a List within a factory method call.
         //I really need to name this method better...
-        SiteFactory.createNewSite("BB1-SV-UCC1", 45, "Baffin Bay",new string[]{ "BAFI1", "BAFI2"});
-        SiteFactory.createNewSite("BB1-SV-UCC2",95,"Baffin Bay",new string[]{"BAFI1","BAFI2"});
-        SiteFactory.createNewSite("BN1-SV-UCC1",30,"Barton",new string[]{"BART1","BART2"});
-        SiteFactory.createNewSite("BN1-SV-UCC2",80,"Barton",new string[]{"BART1","BART2"});
-        SiteFactory.createNewSite("BC1-SV-UCC1",25,"Barton Chapel",new string[]{"BARTC"});
-        SiteFactory.createNewSite("BC1-SV-UCC2",75,"Barton Chapel",new string[]{"BARTC"});
-        SiteFactory.createNewSite("BH1-SV-UCC1",4,"Big Horn 1",new string[]{"BIGHO","BIGH2"});
-        SiteFactory.createNewSite("BH1-SV-UCC2",54,"Big Horn 1",new string[]{"BIGHO","BIGH2"});
-        SiteFactory.createNewSite("BL1-SV-UCC1",41,"Blue Creek",new string[]{"BLUEC"});
-        SiteFactory.createNewSite("BL1-SV-UCC2",91,"Blue Creek",new string[]{"BLUEC"});
-        SiteFactory.createNewSite("BR2-SV-UCC1",33,"Buffalo Ridge 2",new string[]{"BUFA2"});
-        SiteFactory.createNewSite("BR2-SV-UCC2",83,"Buffalo Ridge 2",new string[]{"BUFA2"});
-        SiteFactory.createNewSite("CMCORE01",22,"Casselman",new string[]{"CASSE"});
-        SiteFactory.createNewSite("CM1-SV-UCC2",72,"Casselman",new string[]{"CASSE"});
-        SiteFactory.createNewSite("CR1-SV-UCC1",26,"Cayuga Ridge",new string[]{"CRIDG"});
-        SiteFactory.createNewSite("CR1-SV-UCC2",76,"Cayuga Ridge",new string[]{"CRIDG"});
-        SiteFactory.createNewSite("CG1-SV-UCC1",11,"Colorado Green",new string[]{"COGRE"});
-        SiteFactory.createNewSite("CG1-SV-UCC2",61,"Colorado Green",new string[]{"COGRE"});
-        SiteFactory.createNewSite("CC1CORE01",40,"Copper Crossing",new string[]{"COPER"});
-        SiteFactory.createNewSite("CO1-SV-UCC1",57,"Coyote Ridge",new string[]{"COYOT"});
-        SiteFactory.createNewSite("CO1-SV-UCC2",107,"Coyote Ridge",new string[]{"COYOT"});
-        SiteFactory.createNewSite("DE1-SV-UCC1",50,"Deerfield",new string[]{"DEERF"});
-        SiteFactory.createNewSite("DE1-SV-UCC2",100,"Deerfield",new string[]{"DEERF"});
-        SiteFactory.createNewSite("DW1-SV-UCC1",47,"Desert Wind",new string[]{"DESER"});
-        SiteFactory.createNewSite("DW1-SV-UCC2",97,"Desert Wind",new string[]{"DESER"});
-        SiteFactory.createNewSite("DI2-SV-UCC1",9,"Dillion",new string[]{"DILON"});
-        SiteFactory.createNewSite("DI2-SV-UCC2",59,"Dillion",new string[]{"DILON"});
-        SiteFactory.createNewSite("DLCORE01",10,"Dry Lake 1",new string[]{"DRYLA"});
-        SiteFactory.createNewSite("DL2-SV-UCC1",32,"Dry Lake 2",new string[]{"DRYL2"});
-        SiteFactory.createNewSite("DL2-SV-UCC2",82,"Dry Lake 2",new string[]{"DRYL2"});
-        SiteFactory.createNewSite("EL1-SV-UCC1",254,"El Cabo",new string[]{"ELCAB"});
-        SiteFactory.createNewSite("EL1-SV-UCC1",48,"El Cabo",new string[]{"ELCAB"});
-        SiteFactory.createNewSite("EL1-SV-UCC2",98,"El Cabo",new string[]{"ELCAB"});
-        SiteFactory.createNewSite("ER1-SV-UCC1",12,"Elk River",new string[]{"ELKRI"});
-        SiteFactory.createNewSite("ER1-SV-UCC2",62,"Elk River",new string[]{"ELKRI"});
-        SiteFactory.createNewSite("EC2CORE01",34,"Elm Creek 2",new string[]{"ELMC2"});
-        SiteFactory.createNewSite("EC2CORE02",84,"Elm Creek 2",new string[]{"ELMC2"});
-        SiteFactory.createNewSite("FA1-SV-UCC1",16,"Farmers City",new string[]{"FARME"});
-        SiteFactory.createNewSite("FA1-SV-UCC2",66,"Farmers City",new string[]{"FARME"});
-        SiteFactory.createNewSite("PT1-SV-FE01A",201,"FE01A",new string[] { "FE01" });
-        SiteFactory.createNewSite("PT1-SV-FE01C",202,"FE01C",new string[] { "FE01" });
-        SiteFactory.createNewSite("ACC-SV-FE01D",227,"FE01D",new string[]{"FE01"});
-        SiteFactory.createNewSite("PT1-SV-FE02A",203,"FE02A",new string[] {"FE02" });
-        SiteFactory.createNewSite("PT1-SV-FE02C",204,"FE02C",new string[] { "FE02" });
-        SiteFactory.createNewSite("ACC-SV-FE02D",228,"FE02D",new string[] { "FE02" });
-        SiteFactory.createNewSite("PT1-SV-FE03A",205,"FE03A",new string[]{"FE03"});
-        SiteFactory.createNewSite("PT1-SV-FE03C",206,"FE03C",new string[]{"FE03"});
-        SiteFactory.createNewSite("ACC-SV-FE03D",229,"FE03D",new string[]{"FE03"});
-        SiteFactory.createNewSite("PT1-SV-FE04A",207,"FE04A",new string[]{"FE04"});
-        SiteFactory.createNewSite("PT1-SV-FE04C",208,"FE04C",new string[]{"FE04"});
-        SiteFactory.createNewSite("ACC-SV-FE04D",230,"FE04D",new string[]{"FE04"});
-        SiteFactory.createNewSite("PT1-SV-FE05A",209,"FE05A",new string[]{"FE05"});
-        SiteFactory.createNewSite("PT1-SV-FE05C",210,"FE05C",new string[]{"FE05"});
-        SiteFactory.createNewSite("ACC-SV-FE05D",231,"FE05D",new string[]{"FE05"});
-        SiteFactory.createNewSite("PT1-SV-FE06A",211,"FE06A",new string[]{"FE06"});
-        SiteFactory.createNewSite("PT1-SV-FE06C",212,"FE06C",new string[]{"FE06"});
-        SiteFactory.createNewSite("ACC-SV-FE06D",232,"FE06D",new string[]{"FE06"});
-        SiteFactory.createNewSite("PT1-SV-FE07A",213,"FE07A",new string[]{"FE07"});
-        SiteFactory.createNewSite("PT1-SV-FE07C",214,"FE07C",new string[]{"FE07"});
-        SiteFactory.createNewSite("ACC-SV-FE07D",233,"FE07D",new string[]{"FE07"});
-        SiteFactory.createNewSite("PT1-SV-FE08A",215,"FE08A",new string[]{"FE08"});
-        SiteFactory.createNewSite("PT1-SV-FE08C",216,"FE08C",new string[]{"FE08"});
-        SiteFactory.createNewSite("ACC-SV-FE08D",234,"FE08D",new string[]{"FE08"});
-        SiteFactory.createNewSite("PT1-SV-FE09A",217,"FE09A",new string[]{"FE09"});
-        SiteFactory.createNewSite("PT1-SV-FE09C",218,"FE09C",new string[]{"FE09"});
-        SiteFactory.createNewSite("ACC-SV-FE09D",235,"FE09D",new string[]{"FE09"});
-        SiteFactory.createNewSite("PT1-SV-FE10A",219,"FE10A",new string[]{"FE10"});
-        SiteFactory.createNewSite("PT1-SV-FE10C",220,"FE10C",new string[]{"FE10"});
-        SiteFactory.createNewSite("ACC-SV-FE10D",236,"FE10D",new string[]{"FE10"});
-        SiteFactory.createNewSite("PT1-SV-FE11A",221,"FE11A",new string[]{"FE11"});
-        SiteFactory.createNewSite("PT1-SV-FE11C",222,"FE11C",new string[]{"FE11"});
-        SiteFactory.createNewSite("ACC-SV-FE11D",237,"FE11D",new string[]{"FE11"});
-        SiteFactory.createNewSite("PT1-SV-FE12A",223,"FE12A",new string[]{"FE12"});
-        SiteFactory.createNewSite("PT1-SV-FE12C",224,"FE12C",new string[]{"FE12"});
-        SiteFactory.createNewSite("ACC-SV-FE12D",238,"FE12D",new string[]{"FE12"});
-        SiteFactory.createNewSite("PT1-SV-FE13A",225,"FE13A",new string[]{"FE13"});
-        SiteFactory.createNewSite("PT1-SV-FE14A",151,"FE14A",new string[]{"FE14"});
-        SiteFactory.createNewSite("PT1-SV-FE14C",152,"FE14C",new string[]{"FE14"});
-        SiteFactory.createNewSite("ACC-SV-FE14D",177,"FE14D",new string[]{"FE14"});
-        SiteFactory.createNewSite("PT1-SV-FE15A",153,"FE15A",new string[]{"FE15"});
-        SiteFactory.createNewSite("PT1-SV-FE15C",154,"FE15C",new string[]{"FE15"});
-        SiteFactory.createNewSite("ACC-SV-FE15D",178,"FE15D",new string[]{"FE15"});
-        SiteFactory.createNewSite("PT1-SV-FE16A",155,"FE16A",new string[]{"FE16"});
-        SiteFactory.createNewSite("PT1-SV-FE16C",156,"FE16C",new string[]{"FE16"});
-        SiteFactory.createNewSite("ACC-SV-FE16D",179,"FE16D",new string[]{"FE16"});
-        SiteFactory.createNewSite("PT1-SV-FE17A",157,"FE17A",new string[]{"FE17"});
-        SiteFactory.createNewSite("PT1-SV-FE17C",158,"FE17C",new string[]{"FE17"});
-        SiteFactory.createNewSite("ACC-SV-FE17D",180,"FE17D",new string[]{"FE17"});
-        SiteFactory.createNewSite("PT1-SV-FE18A",333,"FE18A",new string[]{"FE18"});
-        SiteFactory.createNewSite("PT1-SV-FE18C",333,"FE18C",new string[]{"FE18"});
-        SiteFactory.createNewSite("ACC-SV-FE18D",333,"FE18D",new string[]{"FE18"});
-        SiteFactory.createNewSite("PT1-SV-FE19A",333,"FE19A",new string[]{"FE19"});
-        SiteFactory.createNewSite("ACC-SV-FE19D",333,"FE19A",new string[]{"FE19"});
-        SiteFactory.createNewSite("PT1-SV-FE19C",333,"FE19C",new string[]{"FE19"});
-        SiteFactory.createNewSite("FCCORE01",14,"Flying Cloud",new string[]{"FLYCO"});
-        SiteFactory.createNewSite("FC1-SV-UCC2",64,"Flying Cloud",new string[]{"FLYCO"});
-        SiteFactory.createNewSite("GA1-SV-UCC1",49,"Gala",new string[]{"GALA1"});
-        SiteFactory.createNewSite("GA1-SV-UCC2",99,"Gala",new string[]{"GALA1"});
-        SiteFactory.createNewSite("GR1-SV-UCC1",39,"Groton",new string[]{"GROTO"});
-        SiteFactory.createNewSite("GR1-SV-UCC2",89,"Groton",new string[]{"GROTO"});
-        SiteFactory.createNewSite("HS1-SV-UCC1",29,"Hardscrabble",new string[]{"SCRAB"});
-        SiteFactory.createNewSite("HS1-SV-UCC2",79,"Hardscrabble",new string[]{"SCRAB"});
-        SiteFactory.createNewSite("HA1-SV-UCC1",5,"Hay Canyon ",new string[]{"HAYCA"});
-        SiteFactory.createNewSite("HO1-SV-UCC1",38,"Hoosac",new string[]{"HOOSA"});
-        SiteFactory.createNewSite("HO1-SV-UCC2",88,"Hoosac",new string[]{"HOOSA"});
-        SiteFactory.createNewSite("JC1-SV-UCC1",27,"Juniper Canyon",new string[]{"JUNCA"});
-        SiteFactory.createNewSite("JC1-SV-UCC2",77,"Juniper Canyon",new string[]{"JUNCA"});
-        SiteFactory.createNewSite("KA1-SV-UCC1",56,"Karakawa",new string[]{"KARAN"});
-        SiteFactory.createNewSite("KA1-SV-UCC2",106,"Karakawa",new string[]{"KARAN"});
-        SiteFactory.createNewSite("KM1-SV-UCC1",46,"Klamath Falls",new string[]{"KLAMA"});
-        SiteFactory.createNewSite("KM1-SV-UCC2",96,"Klamath Falls",new string[]{"KLAMA"});
-        SiteFactory.createNewSite("KL1-SV-UCC1",3,"Klondike",new string[]{"KLON1","KLON2","KLONM","KLONA","KLONG","KLONS"});
-        SiteFactory.createNewSite("KL1-SV-UCC2",53,"Klondike",new string[]{"KLON1","KLON2","KLONM","KLONA","KLONG","KLONS"});
-        SiteFactory.createNewSite("LJA-SV-UCC1",28,"Leaning Juniper 2 A",new string[]{"LEJUN"});
-        SiteFactory.createNewSite("LJB-SV-UCC1",31,"Leaning Juniper 2 B",new string[]{"LEJU2"});
-        SiteFactory.createNewSite("LJB-SV-UCC2",81,"Leaning Juniper 2 B",new string[]{"LEJU2"});
-        SiteFactory.createNewSite("LP1-SV-UCC1",17,"Lempster",new string[]{"LEMPS"});
-        SiteFactory.createNewSite("LP1-SV-UCC2",67,"Lempster",new string[]{"LEMPS"});
-        SiteFactory.createNewSite("LR2-SV-UCC2",68,"Locus Ridge 1&2",new string[]{"LRID1","LRID2"});
-        SiteFactory.createNewSite("LR2-SV-UCC1",18,"Locus Ridge 2",new string[]{"LRID1","LRID2"});
-        SiteFactory.createNewSite("MZ1-SV-UCC1",35,"Manzana",new string[]{"MANZA"});
-        SiteFactory.createNewSite("MZ1-SV-UCC2",85,"Manzana",new string[]{"MANZA"});
-        SiteFactory.createNewSite("MR1-SV-UCC1",23,"MapleRidge",new string[]{"MRIDG","MRID2","MRID3"});
-        SiteFactory.createNewSite("MD1-SV-UCC1",1,"Minndakota/Buffalo Ridge",new string[]{"MINND","BUFAL"});
-        SiteFactory.createNewSite("MDCORE02",51,"Minndakota/Buffalo Ridge",new string[]{"MINND","BUFAL"});
-        SiteFactory.createNewSite("MG1-SV-UCC1",55,"Montague",new string[]{"MONTA"});
-        SiteFactory.createNewSite("MG1-SV-UCC2",105,"Montague",new string[]{"MONTA"});
-        SiteFactory.createNewSite("MO1-SV-UCC1",20,"Moraine",new string[]{"MORA1","MORA2"});
-        SiteFactory.createNewSite("MO1-SV-UCC2",70,"Moraine",new string[]{"MORA1","MORA2"});
-        SiteFactory.createNewSite("MV3CORE01",37,"Mountain View 3",new string[]{"MV3"});
-        SiteFactory.createNewSite("NH1-SV-UCC1",42,"New Harvest",new string[]{"NEWHA"});
-        SiteFactory.createNewSite("NHCORE02",92,"New Harvest",new string[]{"NEWHA"});
-        SiteFactory.createNewSite("OC1-SV-UCC1",58,"Ottercreek",new string[]{"OTTER"});
-        SiteFactory.createNewSite("OC1-SV-UCC2",108,"Ottercreek",new string[]{"OTTER"});
-        SiteFactory.createNewSite("PA1-SV-UCC1",54,"Patriot",new string[]{"PATRI"});
-        SiteFactory.createNewSite("PA1-SV-UCC2",104,"Patriot",new string[]{"PATRI"});
-        SiteFactory.createNewSite("PB1-SV-UCC1",6,"Pebble Spring",new string[]{"PESPR"});
-        SiteFactory.createNewSite("PS1-SV-UCC1",24,"Penascal",new string[]{"PENE1","PENE2","PENE3"});
-        SiteFactory.createNewSite("PS1-SV-UCC2",74,"Penascal",new string[]{"PENE1","PENE2","PENE3"});
-        SiteFactory.createNewSite("PH1-SV-UCC1",19,"Providence Heights",new string[]{"PROVH"});
-        SiteFactory.createNewSite("PH1-SV-UCC2",69,"Providence Heights",new string[]{"PROVH"});
-        SiteFactory.createNewSite("RUCORE01",21,"Rugby",new string[]{"RUGBY"});
-        SiteFactory.createNewSite("SA1-SV-UCC1",44,"San Luis",new string[]{"SLUIS"});
-        SiteFactory.createNewSite("SHCORE01",8,"Shiloh",new string[]{"SHILO"});
-        SiteFactory.createNewSite("SH1-SV-UCC2",58,"Shiloh",new string[]{"SHILO"});
-        SiteFactory.createNewSite("SC1-SV-UCC1",43,"South Chestnut",new string[]{"SCHES"});
-        SiteFactory.createNewSite("SC1-SV-UCC2",93,"South Chestnut",new string[]{"SCHES"});
-        SiteFactory.createNewSite("SP1-SV-UCC1",7,"Star Point",new string[]{"STPOI"});
-        SiteFactory.createNewSite("SP1-SV-UCC2",57,"Star Point",new string[]{"STPOI"});
-        SiteFactory.createNewSite("TI2-SV-UCC1",36,"Top of Iowa 2",new string[]{"TOPIO"});
-        SiteFactory.createNewSite("TI2-SV-UCC2",86,"Top of Iowa 2",new string[]{"TOPIO"});
-        SiteFactory.createNewSite("TR1-SV-UCC1",13,"Trimont",new string[]{"TRIMO","ELMCR"});
-        SiteFactory.createNewSite("TR1-SV-UCC2",63,"Trimont",new string[]{"TRIMO","ELMCR"});
-        SiteFactory.createNewSite("TU1-SV-UCC1",51,"Tule",new string[]{"TULE1"});
-        SiteFactory.createNewSite("TU1-SV-UCC2",101,"Tule",new string[]{"TULE1"});
-        SiteFactory.createNewSite("TB1-SV-UCC1",15,"Twin Buttes 1",new string[]{"TWINB"});
-        SiteFactory.createNewSite("TB1-SV-UCC2",65,"Twin Buttes 1",new string[]{"TWINB"});
-        SiteFactory.createNewSite("TB2-SV-UCC1",52,"Twin Buttes 2",new string[]{"TWIN2"});
-        SiteFactory.createNewSite("TB2-SV-UCC2",102,"Twin Buttes 2",new string[]{"TWIN2"});
-        SiteFactory.createNewSite("WB1-SV-UCC1",2,"Winnebago",new string[]{"WINNE"});
-        SiteFactory.createNewSite("WB1-SV-UCC2",52,"Winnebago",new string[]{"WINNE"});
-        SiteFactory.createNewSite("KL1-WYEAST-UCC",250,"Wyeast",new string[]{"WYEAS"});
+        SiteFactory.createNewSite("BB1-SV-UCC1", 45, "Baffin Bay", new string[] { "BAFI1", "BAFI2" });
+        SiteFactory.createNewSite("BB1-SV-UCC2", 95, "Baffin Bay", new string[] { "BAFI1", "BAFI2" });
+        SiteFactory.createNewSite("BN1-SV-UCC1", 30, "Barton", new string[] { "BART1", "BART2" });
+        SiteFactory.createNewSite("BN1-SV-UCC2", 80, "Barton", new string[] { "BART1", "BART2" });
+        SiteFactory.createNewSite("BC1-SV-UCC1", 25, "Barton Chapel", new string[] { "BARTC" });
+        SiteFactory.createNewSite("BC1-SV-UCC2", 75, "Barton Chapel", new string[] { "BARTC" });
+        SiteFactory.createNewSite("BH1-SV-UCC1", 4, "Big Horn 1", new string[] { "BIGHO", "BIGH2" });
+        SiteFactory.createNewSite("BH1-SV-UCC2", 54, "Big Horn 1", new string[] { "BIGHO", "BIGH2" });
+        SiteFactory.createNewSite("BL1-SV-UCC1", 41, "Blue Creek", new string[] { "BLUEC" });
+        SiteFactory.createNewSite("BL1-SV-UCC2", 91, "Blue Creek", new string[] { "BLUEC" });
+        SiteFactory.createNewSite("BR2-SV-UCC1", 33, "Buffalo Ridge 2", new string[] { "BUFA2" });
+        SiteFactory.createNewSite("BR2-SV-UCC2", 83, "Buffalo Ridge 2", new string[] { "BUFA2" });
+        SiteFactory.createNewSite("CMCORE01", 22, "Casselman", new string[] { "CASSE" });
+        SiteFactory.createNewSite("CM1-SV-UCC2", 72, "Casselman", new string[] { "CASSE" });
+        SiteFactory.createNewSite("CR1-SV-UCC1", 26, "Cayuga Ridge", new string[] { "CRIDG" });
+        SiteFactory.createNewSite("CR1-SV-UCC2", 76, "Cayuga Ridge", new string[] { "CRIDG" });
+        SiteFactory.createNewSite("CG1-SV-UCC1", 11, "Colorado Green", new string[] { "COGRE" });
+        SiteFactory.createNewSite("CG1-SV-UCC2", 61, "Colorado Green", new string[] { "COGRE" });
+        SiteFactory.createNewSite("CC1CORE01", 40, "Copper Crossing", new string[] { "COPER" });
+        SiteFactory.createNewSite("CO1-SV-UCC1", 57, "Coyote Ridge", new string[] { "COYOT" });
+        SiteFactory.createNewSite("CO1-SV-UCC2", 107, "Coyote Ridge", new string[] { "COYOT" });
+        SiteFactory.createNewSite("DE1-SV-UCC1", 50, "Deerfield", new string[] { "DEERF" });
+        SiteFactory.createNewSite("DE1-SV-UCC2", 100, "Deerfield", new string[] { "DEERF" });
+        SiteFactory.createNewSite("DW1-SV-UCC1", 47, "Desert Wind", new string[] { "DESER" });
+        SiteFactory.createNewSite("DW1-SV-UCC2", 97, "Desert Wind", new string[] { "DESER" });
+        SiteFactory.createNewSite("DI2-SV-UCC1", 9, "Dillion", new string[] { "DILON" });
+        SiteFactory.createNewSite("DI2-SV-UCC2", 59, "Dillion", new string[] { "DILON" });
+        SiteFactory.createNewSite("DLCORE01", 10, "Dry Lake 1", new string[] { "DRYLA" });
+        SiteFactory.createNewSite("DL2-SV-UCC1", 32, "Dry Lake 2", new string[] { "DRYL2" });
+        SiteFactory.createNewSite("DL2-SV-UCC2", 82, "Dry Lake 2", new string[] { "DRYL2" });
+        SiteFactory.createNewSite("EL1-SV-UCC1", 254, "El Cabo", new string[] { "ELCAB" });
+        SiteFactory.createNewSite("EL1-SV-UCC1", 48, "El Cabo", new string[] { "ELCAB" });
+        SiteFactory.createNewSite("EL1-SV-UCC2", 98, "El Cabo", new string[] { "ELCAB" });
+        SiteFactory.createNewSite("ER1-SV-UCC1", 12, "Elk River", new string[] { "ELKRI" });
+        SiteFactory.createNewSite("ER1-SV-UCC2", 62, "Elk River", new string[] { "ELKRI" });
+        SiteFactory.createNewSite("EC2CORE01", 34, "Elm Creek 2", new string[] { "ELMC2" });
+        SiteFactory.createNewSite("EC2CORE02", 84, "Elm Creek 2", new string[] { "ELMC2" });
+        SiteFactory.createNewSite("FA1-SV-UCC1", 16, "Farmers City", new string[] { "FARME" });
+        SiteFactory.createNewSite("FA1-SV-UCC2", 66, "Farmers City", new string[] { "FARME" });
+        SiteFactory.createNewSite("PT1-SV-FE01A", 201, "FE01A", new string[] { "FE01" });
+        SiteFactory.createNewSite("PT1-SV-FE01C", 202, "FE01C", new string[] { "FE01" });
+        SiteFactory.createNewSite("ACC-SV-FE01D", 227, "FE01D", new string[] { "FE01" });
+        SiteFactory.createNewSite("PT1-SV-FE02A", 203, "FE02A", new string[] { "FE02" });
+        SiteFactory.createNewSite("PT1-SV-FE02C", 204, "FE02C", new string[] { "FE02" });
+        SiteFactory.createNewSite("ACC-SV-FE02D", 228, "FE02D", new string[] { "FE02" });
+        SiteFactory.createNewSite("PT1-SV-FE03A", 205, "FE03A", new string[] { "FE03" });
+        SiteFactory.createNewSite("PT1-SV-FE03C", 206, "FE03C", new string[] { "FE03" });
+        SiteFactory.createNewSite("ACC-SV-FE03D", 229, "FE03D", new string[] { "FE03" });
+        SiteFactory.createNewSite("PT1-SV-FE04A", 207, "FE04A", new string[] { "FE04" });
+        SiteFactory.createNewSite("PT1-SV-FE04C", 208, "FE04C", new string[] { "FE04" });
+        SiteFactory.createNewSite("ACC-SV-FE04D", 230, "FE04D", new string[] { "FE04" });
+        SiteFactory.createNewSite("PT1-SV-FE05A", 209, "FE05A", new string[] { "FE05" });
+        SiteFactory.createNewSite("PT1-SV-FE05C", 210, "FE05C", new string[] { "FE05" });
+        SiteFactory.createNewSite("ACC-SV-FE05D", 231, "FE05D", new string[] { "FE05" });
+        SiteFactory.createNewSite("PT1-SV-FE06A", 211, "FE06A", new string[] { "FE06" });
+        SiteFactory.createNewSite("PT1-SV-FE06C", 212, "FE06C", new string[] { "FE06" });
+        SiteFactory.createNewSite("ACC-SV-FE06D", 232, "FE06D", new string[] { "FE06" });
+        SiteFactory.createNewSite("PT1-SV-FE07A", 213, "FE07A", new string[] { "FE07" });
+        SiteFactory.createNewSite("PT1-SV-FE07C", 214, "FE07C", new string[] { "FE07" });
+        SiteFactory.createNewSite("ACC-SV-FE07D", 233, "FE07D", new string[] { "FE07" });
+        SiteFactory.createNewSite("PT1-SV-FE08A", 215, "FE08A", new string[] { "FE08" });
+        SiteFactory.createNewSite("PT1-SV-FE08C", 216, "FE08C", new string[] { "FE08" });
+        SiteFactory.createNewSite("ACC-SV-FE08D", 234, "FE08D", new string[] { "FE08" });
+        SiteFactory.createNewSite("PT1-SV-FE09A", 217, "FE09A", new string[] { "FE09" });
+        SiteFactory.createNewSite("PT1-SV-FE09C", 218, "FE09C", new string[] { "FE09" });
+        SiteFactory.createNewSite("ACC-SV-FE09D", 235, "FE09D", new string[] { "FE09" });
+        SiteFactory.createNewSite("PT1-SV-FE10A", 219, "FE10A", new string[] { "FE10" });
+        SiteFactory.createNewSite("PT1-SV-FE10C", 220, "FE10C", new string[] { "FE10" });
+        SiteFactory.createNewSite("ACC-SV-FE10D", 236, "FE10D", new string[] { "FE10" });
+        SiteFactory.createNewSite("PT1-SV-FE11A", 221, "FE11A", new string[] { "FE11" });
+        SiteFactory.createNewSite("PT1-SV-FE11C", 222, "FE11C", new string[] { "FE11" });
+        SiteFactory.createNewSite("ACC-SV-FE11D", 237, "FE11D", new string[] { "FE11" });
+        SiteFactory.createNewSite("PT1-SV-FE12A", 223, "FE12A", new string[] { "FE12" });
+        SiteFactory.createNewSite("PT1-SV-FE12C", 224, "FE12C", new string[] { "FE12" });
+        SiteFactory.createNewSite("ACC-SV-FE12D", 238, "FE12D", new string[] { "FE12" });
+        SiteFactory.createNewSite("PT1-SV-FE13A", 225, "FE13A", new string[] { "FE13" });
+        SiteFactory.createNewSite("PT1-SV-FE14A", 151, "FE14A", new string[] { "FE14" });
+        SiteFactory.createNewSite("PT1-SV-FE14C", 152, "FE14C", new string[] { "FE14" });
+        SiteFactory.createNewSite("ACC-SV-FE14D", 177, "FE14D", new string[] { "FE14" });
+        SiteFactory.createNewSite("PT1-SV-FE15A", 153, "FE15A", new string[] { "FE15" });
+        SiteFactory.createNewSite("PT1-SV-FE15C", 154, "FE15C", new string[] { "FE15" });
+        SiteFactory.createNewSite("ACC-SV-FE15D", 178, "FE15D", new string[] { "FE15" });
+        SiteFactory.createNewSite("PT1-SV-FE16A", 155, "FE16A", new string[] { "FE16" });
+        SiteFactory.createNewSite("PT1-SV-FE16C", 156, "FE16C", new string[] { "FE16" });
+        SiteFactory.createNewSite("ACC-SV-FE16D", 179, "FE16D", new string[] { "FE16" });
+        SiteFactory.createNewSite("PT1-SV-FE17A", 157, "FE17A", new string[] { "FE17" });
+        SiteFactory.createNewSite("PT1-SV-FE17C", 158, "FE17C", new string[] { "FE17" });
+        SiteFactory.createNewSite("ACC-SV-FE17D", 180, "FE17D", new string[] { "FE17" });
+        SiteFactory.createNewSite("PT1-SV-FE18A", 333, "FE18A", new string[] { "FE18" });
+        SiteFactory.createNewSite("PT1-SV-FE18C", 333, "FE18C", new string[] { "FE18" });
+        SiteFactory.createNewSite("ACC-SV-FE18D", 333, "FE18D", new string[] { "FE18" });
+        SiteFactory.createNewSite("PT1-SV-FE19A", 333, "FE19A", new string[] { "FE19" });
+        SiteFactory.createNewSite("ACC-SV-FE19D", 333, "FE19A", new string[] { "FE19" });
+        SiteFactory.createNewSite("PT1-SV-FE19C", 333, "FE19C", new string[] { "FE19" });
+        SiteFactory.createNewSite("FCCORE01", 14, "Flying Cloud", new string[] { "FLYCO" });
+        SiteFactory.createNewSite("FC1-SV-UCC2", 64, "Flying Cloud", new string[] { "FLYCO" });
+        SiteFactory.createNewSite("GA1-SV-UCC1", 49, "Gala", new string[] { "GALA1" });
+        SiteFactory.createNewSite("GA1-SV-UCC2", 99, "Gala", new string[] { "GALA1" });
+        SiteFactory.createNewSite("GR1-SV-UCC1", 39, "Groton", new string[] { "GROTO" });
+        SiteFactory.createNewSite("GR1-SV-UCC2", 89, "Groton", new string[] { "GROTO" });
+        SiteFactory.createNewSite("HS1-SV-UCC1", 29, "Hardscrabble", new string[] { "SCRAB" });
+        SiteFactory.createNewSite("HS1-SV-UCC2", 79, "Hardscrabble", new string[] { "SCRAB" });
+        SiteFactory.createNewSite("HA1-SV-UCC1", 5, "Hay Canyon ", new string[] { "HAYCA" });
+        SiteFactory.createNewSite("HO1-SV-UCC1", 38, "Hoosac", new string[] { "HOOSA" });
+        SiteFactory.createNewSite("HO1-SV-UCC2", 88, "Hoosac", new string[] { "HOOSA" });
+        SiteFactory.createNewSite("JC1-SV-UCC1", 27, "Juniper Canyon", new string[] { "JUNCA" });
+        SiteFactory.createNewSite("JC1-SV-UCC2", 77, "Juniper Canyon", new string[] { "JUNCA" });
+        SiteFactory.createNewSite("KA1-SV-UCC1", 56, "Karakawa", new string[] { "KARAN" });
+        SiteFactory.createNewSite("KA1-SV-UCC2", 106, "Karakawa", new string[] { "KARAN" });
+        SiteFactory.createNewSite("KM1-SV-UCC1", 46, "Klamath Falls", new string[] { "KLAMA" });
+        SiteFactory.createNewSite("KM1-SV-UCC2", 96, "Klamath Falls", new string[] { "KLAMA" });
+        SiteFactory.createNewSite("KL1-SV-UCC1", 3, "Klondike", new string[] { "KLON1", "KLON2", "KLONM", "KLONA", "KLONG", "KLONS" });
+        SiteFactory.createNewSite("KL1-SV-UCC2", 53, "Klondike", new string[] { "KLON1", "KLON2", "KLONM", "KLONA", "KLONG", "KLONS" });
+        SiteFactory.createNewSite("LJA-SV-UCC1", 28, "Leaning Juniper 2 A", new string[] { "LEJUN" });
+        SiteFactory.createNewSite("LJB-SV-UCC1", 31, "Leaning Juniper 2 B", new string[] { "LEJU2" });
+        SiteFactory.createNewSite("LJB-SV-UCC2", 81, "Leaning Juniper 2 B", new string[] { "LEJU2" });
+        SiteFactory.createNewSite("LP1-SV-UCC1", 17, "Lempster", new string[] { "LEMPS" });
+        SiteFactory.createNewSite("LP1-SV-UCC2", 67, "Lempster", new string[] { "LEMPS" });
+        SiteFactory.createNewSite("LR2-SV-UCC2", 68, "Locus Ridge 1&2", new string[] { "LRID1", "LRID2" });
+        SiteFactory.createNewSite("LR2-SV-UCC1", 18, "Locus Ridge 2", new string[] { "LRID1", "LRID2" });
+        SiteFactory.createNewSite("MZ1-SV-UCC1", 35, "Manzana", new string[] { "MANZA" });
+        SiteFactory.createNewSite("MZ1-SV-UCC2", 85, "Manzana", new string[] { "MANZA" });
+        SiteFactory.createNewSite("MR1-SV-UCC1", 23, "MapleRidge", new string[] { "MRIDG", "MRID2", "MRID3" });
+        SiteFactory.createNewSite("MD1-SV-UCC1", 1, "Minndakota/Buffalo Ridge", new string[] { "MINND", "BUFAL" });
+        SiteFactory.createNewSite("MDCORE02", 51, "Minndakota/Buffalo Ridge", new string[] { "MINND", "BUFAL" });
+        SiteFactory.createNewSite("MG1-SV-UCC1", 55, "Montague", new string[] { "MONTA" });
+        SiteFactory.createNewSite("MG1-SV-UCC2", 105, "Montague", new string[] { "MONTA" });
+        SiteFactory.createNewSite("MO1-SV-UCC1", 20, "Moraine", new string[] { "MORA1", "MORA2" });
+        SiteFactory.createNewSite("MO1-SV-UCC2", 70, "Moraine", new string[] { "MORA1", "MORA2" });
+        SiteFactory.createNewSite("MV3CORE01", 37, "Mountain View 3", new string[] { "MV3" });
+        SiteFactory.createNewSite("NH1-SV-UCC1", 42, "New Harvest", new string[] { "NEWHA" });
+        SiteFactory.createNewSite("NHCORE02", 92, "New Harvest", new string[] { "NEWHA" });
+        SiteFactory.createNewSite("OC1-SV-UCC1", 58, "Ottercreek", new string[] { "OTTER" });
+        SiteFactory.createNewSite("OC1-SV-UCC2", 108, "Ottercreek", new string[] { "OTTER" });
+        SiteFactory.createNewSite("PA1-SV-UCC1", 54, "Patriot", new string[] { "PATRI" });
+        SiteFactory.createNewSite("PA1-SV-UCC2", 104, "Patriot", new string[] { "PATRI" });
+        SiteFactory.createNewSite("PB1-SV-UCC1", 6, "Pebble Spring", new string[] { "PESPR" });
+        SiteFactory.createNewSite("PS1-SV-UCC1", 24, "Penascal", new string[] { "PENE1", "PENE2", "PENE3" });
+        SiteFactory.createNewSite("PS1-SV-UCC2", 74, "Penascal", new string[] { "PENE1", "PENE2", "PENE3" });
+        SiteFactory.createNewSite("PH1-SV-UCC1", 19, "Providence Heights", new string[] { "PROVH" });
+        SiteFactory.createNewSite("PH1-SV-UCC2", 69, "Providence Heights", new string[] { "PROVH" });
+        SiteFactory.createNewSite("RUCORE01", 21, "Rugby", new string[] { "RUGBY" });
+        SiteFactory.createNewSite("SA1-SV-UCC1", 44, "San Luis", new string[] { "SLUIS" });
+        SiteFactory.createNewSite("SHCORE01", 8, "Shiloh", new string[] { "SHILO" });
+        SiteFactory.createNewSite("SH1-SV-UCC2", 58, "Shiloh", new string[] { "SHILO" });
+        SiteFactory.createNewSite("SC1-SV-UCC1", 43, "South Chestnut", new string[] { "SCHES" });
+        SiteFactory.createNewSite("SC1-SV-UCC2", 93, "South Chestnut", new string[] { "SCHES" });
+        SiteFactory.createNewSite("SP1-SV-UCC1", 7, "Star Point", new string[] { "STPOI" });
+        SiteFactory.createNewSite("SP1-SV-UCC2", 57, "Star Point", new string[] { "STPOI" });
+        SiteFactory.createNewSite("TI2-SV-UCC1", 36, "Top of Iowa 2", new string[] { "TOPIO" });
+        SiteFactory.createNewSite("TI2-SV-UCC2", 86, "Top of Iowa 2", new string[] { "TOPIO" });
+        SiteFactory.createNewSite("TR1-SV-UCC1", 13, "Trimont", new string[] { "TRIMO", "ELMCR" });
+        SiteFactory.createNewSite("TR1-SV-UCC2", 63, "Trimont", new string[] { "TRIMO", "ELMCR" });
+        SiteFactory.createNewSite("TU1-SV-UCC1", 51, "Tule", new string[] { "TULE1" });
+        SiteFactory.createNewSite("TU1-SV-UCC2", 101, "Tule", new string[] { "TULE1" });
+        SiteFactory.createNewSite("TB1-SV-UCC1", 15, "Twin Buttes 1", new string[] { "TWINB" });
+        SiteFactory.createNewSite("TB1-SV-UCC2", 65, "Twin Buttes 1", new string[] { "TWINB" });
+        SiteFactory.createNewSite("TB2-SV-UCC1", 52, "Twin Buttes 2", new string[] { "TWIN2" });
+        SiteFactory.createNewSite("TB2-SV-UCC2", 102, "Twin Buttes 2", new string[] { "TWIN2" });
+        SiteFactory.createNewSite("WB1-SV-UCC1", 2, "Winnebago", new string[] { "WINNE" });
+        SiteFactory.createNewSite("WB1-SV-UCC2", 52, "Winnebago", new string[] { "WINNE" });
+        SiteFactory.createNewSite("KL1-WYEAST-UCC", 250, "Wyeast", new string[] { "WYEAS" });
+
+
+        //Create new  filters
+        SiteFactory.createNewFilter("WindNode", "LOGLIST = 'ALMFE16' AND SATT1 = 'CORE'");
+        SiteFactory.createNewFilter("RAS", "LOGLIST='ALMFE16' AND SATT1='CORE'");
+        SiteFactory.createNewFilter("FrontVue", "LOGLIST='ALMFE16' AND STATION =0");
     }
     /// <summary>
     /// Clear the SiteFactory Dictionary and the queryDictionary objects created in buildDictionaries
@@ -387,7 +426,7 @@ public partial class alarms_Default : System.Web.UI.Page
     private void clearDictionaries()
     {
         queryDict.Clear();
-        SiteFactory.clearSiteCache();
+        SiteFactory.clearDictionaries();
     }
     private DataTable applyParameters()
     {
@@ -402,16 +441,21 @@ public partial class alarms_Default : System.Web.UI.Page
         string oraParams = "";
         //string oraQry = "SELECT * FROM ALARMS";
 
-        string oraQry = "SELECT /*+PARALLEL(20)*/ ";
-        foreach(KeyValuePair<string,string> queryEntry in queryDict)
+        string oraQry = "SELECT /*+PARALLEL(10)*/ ";
+        foreach (KeyValuePair<string, string> queryEntry in queryDict)
         {
-            oraQry += queryEntry.Value+" AS \""+queryEntry.Key+"\",";
+            oraQry += queryEntry.Value + " AS \"" + queryEntry.Key + "\",";
         }
         //remove the last comma from the string and then stap
-        oraQry=oraQry.TrimEnd(',')+" FROM HIS.ALARMS";
+        oraQry = oraQry.TrimEnd(',') + " FROM HIS.ALARMS";
 
         string oraOrd = " ORDER BY CHRONO DESC";
         OracleCommand oraCmd = new OracleCommand();
+
+
+        //For use with time
+        long epochStart=0;
+        long epochEnd=0;
 
         //PARAMETER: CHRONO.START
         if (!txtParamDTStart.Text.Equals(""))
@@ -423,7 +467,7 @@ public partial class alarms_Default : System.Web.UI.Page
             }
             else
             {
-                long epochStart = ((long)(dtStart.ToUniversalTime() - new DateTime(1970, 1, 1)).TotalMilliseconds);
+                epochStart = ((long)(dtStart.ToUniversalTime() - new DateTime(1970, 1, 1)).TotalMilliseconds);
                 Console.WriteLine("EpochStart: " + epochStart);
                 oraParams += (oraParams.Equals("") ? "" : " AND ") + "CHRONO >= :dtStart";
                 oraCmd.Parameters.Add(new OracleParameter("dtStart", epochStart));
@@ -441,12 +485,28 @@ public partial class alarms_Default : System.Web.UI.Page
             else
             {
                 //double epochEnd = (double)1000 * ((int)(dtEnd - new DateTime(1970, 1, 1)).TotalSeconds);
-                long epochEnd = ((long)(dtEnd.ToUniversalTime() - new DateTime(1970, 1, 1)).TotalMilliseconds);
+                epochEnd = ((long)(dtEnd.ToUniversalTime() - new DateTime(1970, 1, 1)).TotalMilliseconds);
 
                 oraParams += (oraParams.Equals("") ? "" : " AND ") + "CHRONO <= :dtEnd";
                 oraCmd.Parameters.Add(new OracleParameter("dtEnd", epochEnd));
             }
         }
+
+        //perform a time check to see if the dtSTart and dtEnd exceeds 60 days or 5.184e+9 milliseconds
+        //If it exceeds it, then display error and inform user  
+
+        if ((!txtParamDTEnd.Text.Equals("")) && (!txtParamDTStart.Text.Equals(""))){
+
+            if(epochEnd-epochStart > TWO_MONTH_TIME_LIMIT)
+            {
+                lblAlarms.Text = "Invalid Range. Range must be within two months";
+                return null;
+            }
+
+        }
+
+        
+        
 
         //PARAMETER: PROJECT
         //if (!txtParamProject.Text.Equals(""))
@@ -459,38 +519,40 @@ public partial class alarms_Default : System.Web.UI.Page
         //PARAMETER: LOGLIST
         if (!txtParamLogList.Text.Equals(""))
         {
-            //oraParams += (oraParams.Equals("") ? "" : " AND ") + "LOGLIST = :loglist";
-            //use a dictionary to get the ALMLOGLIST from the site Name
-            //oraCmd.Parameters.Add(new OracleParameter("loglist", "ALM"+txtParamLogList.Text));
+            //Get the name of the 'site' or 'filter' from the user. This is in the txtParamLogList text field
+            string logList = txtParamLogList.Text;
 
-            //Get the site prefixe(s) from the site name
-            string []prefix = SiteFactory.getPrefixFromSiteName(txtParamLogList.Text);
-
-            //For single sites (Copper X-ing, Wyeast, etc.)
-            if(prefix.Length == 1)
+            //If it is a filter, then apply filter conditions
+            if (SiteFactory.getFilters().ContainsKey(logList))
             {
-                oraParams += (oraParams.Equals("") ? "" : " AND ") + "LOGLIST = :loglist";
-                //oraCmd.Parameters.Add(new OracleParameter("loglist", "ALM"+txtParamLogList.Text));
-                oraCmd.Parameters.Add(new OracleParameter("loglist", "ALM" + prefix[0]));
+                oraParams += (oraParams.Equals("") ? "" : " AND ") + SiteFactory.getFilters()[logList];
             }
-            //For sites with multiple sub sites (Klondike [KA,K3, etc], Baffin Bay [BB1,BB2], etc.)
-            //In this particular case, it is a bad idea to use Oracle cmd substitution. You're better off "hard coding it"
+            //otherwise, it is a site and should be handled as such
             else
             {
 
-                //Hard code the first site...this is unavoidable
-                oraParams += (oraParams.Equals("") ? "" : " AND ") + "(LOGLIST = " + "'ALM"+prefix[0]+"'";
-                //Loop through the rest. NOte that you might have a double prefix inserted, but I don't think that matters too much
-                foreach(string subSite in prefix.Skip(1))
+                //Get the site prefixe(s) from the site name
+                string[] prefix = SiteFactory.getPrefixFromSiteName(logList);
+
+                //For single sites (Copper X-ing, Wyeast, etc.)
+                if (prefix.Length == 1)
                 {
-                    oraParams += " OR LOGLIST = " + "'ALM"+subSite+"'";
-
+                    oraParams += (oraParams.Equals("") ? "" : " AND ") + "LOGLIST = :loglist";
+                    oraCmd.Parameters.Add(new OracleParameter("loglist", "ALM" + prefix[0]));
                 }
-                oraParams += ")";
-                //oraParams += (oraParams.Equals("") ? "" : " AND ") + "LOGLIST = :loglist";
-                //oraCmd.Parameters.Add(new OracleParameter("loglist", "ALM"+txtParamLogList.Text));
+                //For sites with multiple sub sites (Klondike [KA,K3, etc], Baffin Bay [BB1,BB2], etc.)
+                //In this particular case, it is a bad idea to use Oracle cmd substitution. You're better off "hard coding it"
+                else
+                {
+                    //Hard code the first site...this is unavoidable and then loop through the rest. Use skip to skip the first element
+                    oraParams += (oraParams.Equals("") ? "" : " AND ") + "(LOGLIST = " + "'ALM" + prefix[0] + "'";
+                    foreach (string subSite in prefix.Skip(1))
+                    {
+                        oraParams += " OR LOGLIST = " + "'ALM" + subSite + "'";
+                    }
+                    oraParams += ")";
+                }
             }
-
         }
 
         //PARAMETER: NAME
@@ -503,7 +565,8 @@ public partial class alarms_Default : System.Web.UI.Page
                 oraCmd.Parameters.Add(new OracleParameter("tagname", txtParamName.Text));
             }
             // If the user decided to search by description 
-            else{
+            else
+            {
 
                 oraParams += (oraParams.Equals("") ? "" : " AND ") + "lower(TITLE) LIKE lower(:tagname)";
                 oraCmd.Parameters.Add(new OracleParameter("tagname", txtParamName.Text));
@@ -579,17 +642,17 @@ public partial class alarms_Default : System.Web.UI.Page
             //The time should be in Local time and not UTC
             // If it is anything else, just ignore it
             newRow.BeginEdit();
-            foreach(DataColumn col in newTable.Columns)
+            foreach (DataColumn col in newTable.Columns)
             {
                 //If Time. This should be in local pacific  time
-                if(col == newTimeCol)
+                if (col == newTimeCol)
                 {
                     Object temp = fmtDateTime(epochToDateTime(row[col.ColumnName]).ToLocalTime());
                     newRow.SetField(col, temp);
                 }
 
                 //If Station. This should be in a machine name format
-                else if (col ==  newStationCol)
+                else if (col == newStationCol)
                 {
                     //Get the Site prefix from the Domain Column. Note that not all alarm will have a Domain or a nature
                     string sitePrefix = row[DOMAIN_COL].ToString();
@@ -871,7 +934,7 @@ public partial class alarms_Default : System.Web.UI.Page
         //txtParamDTStart.Text = DateTime.UtcNow.AddMinutes(-1).ToString("yyyy-MM-dd HH:mm:ss");
 
         clearTextFields();
-       //Local Time format
+        //Local Time format
         txtParamDTEnd.Text = DateTime.Now.AddMinutes(-1).ToString("yyyy-MM-dd HH:mm:ss");
 
         txtParamLogList.Text = "Baffin Bay";
@@ -896,11 +959,19 @@ public partial class alarms_Default : System.Web.UI.Page
         ListView_Alarms.DataSource = "";
         ListView_Alarms.DataBind();
         List<String> siteList = new List<string>();
-        foreach (SiteStructure site  in SiteFactory.getSiteList())
+        foreach (SiteStructure site in SiteFactory.getSiteList())
         {
-            if(!siteList.Contains(site.siteName))
+            if (!siteList.Contains(site.siteName))
                 siteList.Add(site.siteName);
         }
+
+        //Add the filters
+        foreach(KeyValuePair<string,string> filter in SiteFactory.getFilters())
+        {
+            siteList.Add(filter.Key);
+        }
+
+        siteList.Sort();
 
         //Rebind the siteList to the dropdown list
         SiteDropDownList.DataSource = siteList;
@@ -1171,14 +1242,15 @@ public partial class alarms_Default : System.Web.UI.Page
     //protected void ddlParamFilter_SelectedIndexChanged(object sender, EventArgs e) { txtParamFilter.Text = ddlParamFilter.SelectedValue; updateFilterGrid(); }
     //protected void ddlParamFilterMode_SelectedIndexChanged(object sender, EventArgs e) { txtParamFilterMode.Text = ddlParamFilterMode.SelectedValue; }
 
-    protected void lbtDTStart_Click(object sender, EventArgs e) {
+    protected void lbtDTStart_Click(object sender, EventArgs e)
+    {
 
         String[] command = ((LinkButton)(sender)).CommandArgument.Split(',');
         String timePeriod = command[1];
-        double time = Convert.ToInt16("-"+command[0]);
+        double time = Convert.ToInt16("-" + command[0]);
         if (timePeriod.Equals("m"))
             txtParamDTStart.Text = DateTime.Now.AddMinutes(time).ToString("yyyy-MM-dd HH:mm:ss");
-        else 
+        else
             txtParamDTStart.Text = DateTime.Now.AddHours(time).ToString("yyyy-MM-dd HH:mm:ss");
 
         localTimetoEpochTime(DateTime.Now);

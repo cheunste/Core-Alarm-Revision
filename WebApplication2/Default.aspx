@@ -53,7 +53,7 @@
                         <asp:LinkButton runat="server" Text="3h"  onclick="lbtDTStart_Click" CommandArgument="3,h" /> |
                         <asp:LinkButton runat="server" Text="6h"  onclick="lbtDTStart_Click" CommandArgument="6,h" /> | <b>)</b>
                     </div>
-                </td><td>Start/end time in Pacific Time.</td></tr>
+                </td><td>Start/end time in Pacific Time <b>Range must be within 60 days</b>.</td></tr>
             <tr><th>Alarm List</th>
                 <td>
                     <asp:TextBox runat="server" ID="txtParamLogList" />
