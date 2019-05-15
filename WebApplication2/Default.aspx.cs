@@ -51,7 +51,7 @@ public static class SiteFactory
     public static void createNewSite(string computerName, int nodeNumber, string[] siteName, string[] sitePrefix)
     {
         int temp = siteName.Length;
-        for (int i = 0; i <= temp; i++)
+        for (int i = 0; i < temp; i++)
         {
             SiteStructure s = new SiteStructure(computerName, nodeNumber, siteName[i], sitePrefix[i]);
 
@@ -433,7 +433,7 @@ public partial class alarms_Default : System.Web.UI.Page
 
         //Create new  filters
         SiteFactory.createNewFilter("WindNode", "LOGLIST = 'ALMFE16' AND SATT1 = 'CORE'");
-        SiteFactory.createNewFilter("RAS", "LOGLIST='ALMFE16' AND SATT1='CORE'");
+        SiteFactory.createNewFilter("RAS", "LOGLIST='RAS'");
         SiteFactory.createNewFilter("FrontVue", "LOGLIST='ALMFE16' AND STATION =0");
     }
     /// <summary>
@@ -513,13 +513,11 @@ public partial class alarms_Default : System.Web.UI.Page
 
         if ((!txtParamDTEnd.Text.Equals("")) && (!txtParamDTStart.Text.Equals("")))
         {
-
             if (epochEnd - epochStart > TWO_MONTH_TIME_LIMIT)
             {
                 lblAlarms.Text = "Invalid Range. Range must be within two months";
                 return null;
             }
-
         }
 
         //PARAMETER: LOGLIST
@@ -536,28 +534,11 @@ public partial class alarms_Default : System.Web.UI.Page
             //otherwise, it is a site and should be handled as such
             else
             {
-
                 //Get the site prefixe(s) from the site name
                 string prefix = SiteFactory.getPrefixFromSiteName(logList);
 
-                //For single sites (Copper X-ing, Wyeast, etc.)
-                if (prefix.Length == 1)
-                {
-                    oraParams += (oraParams.Equals("") ? "" : " AND ") + "LOGLIST = :loglist";
-                    oraCmd.Parameters.Add(new OracleParameter("loglist", "ALM" + prefix));
-                }
-                //For sites with multiple sub sites (Klondike [KA,K3, etc], Baffin Bay [BB1,BB2], etc.)
-                //In this particular case, it is a bad idea to use Oracle cmd substitution. You're better off "hard coding it"
-                else
-                {
-                    //Hard code the first site...this is unavoidable and then loop through the rest. Use skip to skip the first element
-                    //oraParams += (oraParams.Equals("") ? "" : " AND ") + "(LOGLIST = " + "'ALM" + prefix[0] + "'";
-                    //foreach (string subSite in prefix.Skip(1))
-                    //{
-                    //    oraParams += " OR LOGLIST = " + "'ALM" + subSite + "'";
-                    //}
-                    //oraParams += ")";
-                }
+                oraParams += (oraParams.Equals("") ? "" : " AND ") + "LOGLIST = :loglist";
+                oraCmd.Parameters.Add(new OracleParameter("loglist", "ALM" + prefix));
             }
         }
 
