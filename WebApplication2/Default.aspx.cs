@@ -385,8 +385,8 @@ public partial class alarms_Default : System.Web.UI.Page
         SiteFactory.createNewSite("LJB-SV-UCC2", 81, new string[] { "Leaning Juniper 2 B" }, new string[] { "LEJU2" });
         SiteFactory.createNewSite("LP1-SV-UCC1", 17, new string[] { "Lempster" }, new string[] { "LEMPS" });
         SiteFactory.createNewSite("LP1-SV-UCC2", 67, new string[] { "Lempster" }, new string[] { "LEMPS" });
-        SiteFactory.createNewSite("LR2-SV-UCC2", 68, new string[] { "Locus Ridge 1&2" }, new string[] { "LRID1", "LRID2" });
-        SiteFactory.createNewSite("LR2-SV-UCC1", 18, new string[] { "Locus Ridge 2" }, new string[] { "LRID1", "LRID2" });
+        SiteFactory.createNewSite("LR2-SV-UCC1", 68, new string[] { "Locus Ridge 1","Locus Ridge 2" }, new string[] { "LRID1", "LRID2" });
+        SiteFactory.createNewSite("LR2-SV-UCC2", 18, new string[] { "Locus Ridge 1","Locus Ridge 2" }, new string[] { "LRID1", "LRID2" });
         SiteFactory.createNewSite("MZ1-SV-UCC1", 35, new string[] { "Manzana" }, new string[] { "MANZA" });
         SiteFactory.createNewSite("MZ1-SV-UCC2", 85, new string[] { "Manzana" }, new string[] { "MANZA" });
         SiteFactory.createNewSite("MR1-SV-UCC1", 23, new string[] { "MapleRidge 1" }, new string[] { "MRIDG", "MRID2", "MRID3" });
@@ -534,7 +534,6 @@ public partial class alarms_Default : System.Web.UI.Page
             //otherwise, it is a site and should be handled as such
             else
             {
-                //Get the site prefixe(s) from the site name
                 string prefix = SiteFactory.getPrefixFromSiteName(logList);
 
                 oraParams += (oraParams.Equals("") ? "" : " AND ") + "LOGLIST = :loglist";
@@ -546,7 +545,7 @@ public partial class alarms_Default : System.Web.UI.Page
         if (!txtParamName.Text.Equals(""))
         {
             // If the user selected to search by tag name 
-            if (coreSearchOption.Equals(NAME_OPTION))
+            if (coreSearchOption.SelectedValue.Equals(NAME_OPTION))
             {
                 oraParams += (oraParams.Equals("") ? "" : " AND ") + "lower(NAME) LIKE lower(:tagname)";
                 oraCmd.Parameters.Add(new OracleParameter("tagname", txtParamName.Text));
@@ -598,11 +597,13 @@ public partial class alarms_Default : System.Web.UI.Page
         string DOMAIN_COL = "Domain";
         string ALARM_LIST_COL = "AlarmList";
 
+        //Make a copy of the station id column
         int stationIndex = newTable.Columns.IndexOf(STATION_COL);
         newTable.Columns.Remove(STATION_COL);
         DataColumn newStationCol = newTable.Columns.Add(STATION_COL);
         newStationCol.SetOrdinal(stationIndex);
 
+        //Make a copy of the time column
         int timeIndex = newTable.Columns.IndexOf(TIME_COL);
         newTable.Columns.Remove(TIME_COL);
         DataColumn newTimeCol = newTable.Columns.Add(TIME_COL);
