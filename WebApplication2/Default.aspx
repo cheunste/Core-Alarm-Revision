@@ -77,6 +77,7 @@
                     <asp:RadioButtonList ID="coreSearchOption" runat="server">
                         <asp:ListItem Text="Search by Tag Name" Value="name" Selected="True"/>
                         <asp:ListItem Text="Search by Tag Desc" Value="desc" />
+                        <asp:ListItem Text="Search by Turbine Name" Value="turbine" />
                     </asp:RadioButtonList>
 
                 </td>

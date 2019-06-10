@@ -188,6 +188,7 @@ public partial class alarms_Default : System.Web.UI.Page
 
     //Contants
     private string NAME_OPTION = "name";
+    private string TURBINE_OPTION = "turbine";
     private long TWO_MONTH_TIME_LIMIT = 5184000000;
     private string ORALCE_SOURCE = "Data Source=PT1-SV-ORACLE02/core.ppmems.us;User ID=HIS;Password=HIS;";
 
@@ -548,15 +549,23 @@ public partial class alarms_Default : System.Web.UI.Page
             if (coreSearchOption.SelectedValue.Equals(NAME_OPTION))
             {
                 oraParams += (oraParams.Equals("") ? "" : " AND ") + "lower(NAME) LIKE lower(:tagname)";
-                oraCmd.Parameters.Add(new OracleParameter("tagname", txtParamName.Text));
+                //oraCmd.Parameters.Add(new OracleParameter("tagname", txtParamName.Text));
+            }
+            //If the user sleected to search by Turbine Name
+            else if (coreSearchOption.SelectedValue.Equals(TURBINE_OPTION))
+            {
+
+                oraParams += (oraParams.Equals("") ? "" : " AND ") + "lower(SATT3) LIKE lower(:tagname)";
+                //oraCmd.Parameters.Add(new OracleParameter("tagname", txtParamName.Text));
             }
             // If the user decided to search by description 
             else
             {
 
                 oraParams += (oraParams.Equals("") ? "" : " AND ") + "lower(TITLE) LIKE lower(:tagname)";
-                oraCmd.Parameters.Add(new OracleParameter("tagname", txtParamName.Text));
+                //oraCmd.Parameters.Add(new OracleParameter("tagname", txtParamName.Text));
             }
+                oraCmd.Parameters.Add(new OracleParameter("tagname", txtParamName.Text));
         }
 
 
