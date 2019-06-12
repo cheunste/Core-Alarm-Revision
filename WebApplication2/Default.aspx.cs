@@ -458,7 +458,7 @@ public partial class alarms_Default : System.Web.UI.Page
         string oraParams = "";
         //string oraQry = "SELECT * FROM ALARMS";
 
-        string oraQry = "SELECT /*+PARALLEL(10)*/ ";
+        string oraQry = "SELECT /*+PARALLEL(4)*/ ";
         foreach (KeyValuePair<string, string> queryEntry in queryDict)
         {
             oraQry += queryEntry.Value + " AS \"" + queryEntry.Key + "\",";
