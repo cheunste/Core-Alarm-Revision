@@ -19,25 +19,6 @@
             </tr>
         </thead>
         <tbody>
-<%--            <tr><td>Start Day</td>
-                <td>
-                    <ASP:TextBox runat="server" id="txtDateStart" />
-                    <obout:Calendar ID="calDateStart" runat="server" DatePickerMode="True" TextBoxId="txtDateStart" DatePickerImagePath="/_images/calicon.gif" />
-                </td>
-                <td>From midnight.</td></tr>
-            <tr><td>End Day</td>
-                <td><ASP:TextBox runat="server" id="txtDateEnd" />
-                    <obout:Calendar ID="calDateEnd" runat="server" DatePickerMode="True" TextBoxId="txtDateEnd" DatePickerImagePath="/_images/calicon.gif" /></td>
-                <td>Until 11:59:59.999</td></tr>--%>
-<%--            <tr><td>Site</td>     
-                <td><asp:DropDownList runat="server" ID="ddlSite" DataSourceID="SqlDataSource_List_Sites" DataTextField="Transaction_Site" DataValueField="Transaction_Site" AppendDataBoundItems="true">
-                        <asp:ListItem Text="(All Sites)" Value="" />
-                    </asp:DropDownList>
-                    <asp:SqlDataSource runat="server" ID="SqlDataSource_List_Sites"
-                        ConnectionString="<%$ ConnectionStrings:ConnectionString_PDXSQL08_EMSWEB %>"
-                        SelectCommandType="StoredProcedure" SelectCommand="uspPSPSites"
-                    ></asp:SqlDataSource></td>
-                <td></td></tr>--%>
             <tr><th>Time Range<br /><span style="font-weight:normal; font-size:small; font-style:italic;">(Pacific Time)</span></th>
                 <td colspan="1">
                     <asp:TextBox runat="server" ID="txtParamDTStart" Width="140" />
@@ -163,28 +144,14 @@
         <ItemTemplate>
             <tr>
                 <td class="nowrap"><%# Eval("Time")%></td>
-<%--                <td><%# Eval("PROJECT") %></td>
-                <td><%# Eval("LOGLIST") %></td>--%>
                 <td class="nowrap"><%# Eval("Turbine Name") %></td>
                 <td class="nowrap"><%# Eval("Tag Name") %></td>
                 <td class="nowrap"><%# Eval("Tag Description") %></td>
-<%--                <td><%# Eval("UNITNAME") %></td>
-                <td><%# Eval("VARTYPE") %></td>
-                <td><%# Eval("PRIORITY") == null ? "NULL" : (Eval("PRIORITY").GetType().Name == "DBNull" ? "null" : Eval("PRIORITY")) %></td>--%>
                 <td><%# Eval("Value") %></td>
-               <%-- <td><%# Eval("TVAL") %></td>
-                <td><%# Eval("EVTTYPE") %></td>
-                   --%>
                 <td class="nowrap"><%# Eval("Event") %></td>
-                <%-- %><td><%# Eval("EVTTXT") %></td>--%>
-                <%--<td><%# Eval("COMPINF") %></td>--%>
                 <td><%# Eval("Username") %></td>
-                <%--<td><%# Eval("USERNOTE") %></td>
-                <td><%# Eval("TSTYPE") %></td>
-                <td><%# Eval("BATT") %></td> --%>
                 <td><%# Eval("Domain") %></td>
                 <td><%# Eval("Nature") %></td>
-                <%-- %><td><%# Eval("CDATT8") %></td>--%>
                 <td><%# Eval("Station") %></td>
             </tr>
         </ItemTemplate>

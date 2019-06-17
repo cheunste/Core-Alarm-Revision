@@ -14,7 +14,8 @@ using System.Text.RegularExpressions;
 using System.IO;
 using System.Collections.Generic;
 
-// This is a class that's used to essentually map a computer name, with a node number and a sitename and god knows what else
+
+// This is a class that's used to essentually map a computer name, with a node number, a sitename, etc.
 public class SiteStructure
 {
 
@@ -33,8 +34,18 @@ public class SiteStructure
     public string sitePrefix { get; set; }
 }
 
+/// <summary>
+/// This is a inner class used to create a "site" object. 
+/// </summary>
+/*
+ * This is a class used to create SiteStructure objects, but ended up doing much more than that because of site prefix and filter requirements 
+ * 
+ * Contains methods for creating a site as well as methods to set/get the content in the dictionaries members
+ *  
+ */
 public static class SiteFactory
 {
+    //These are private members to this class. 
     private static List<SiteStructure> siteList = new List<SiteStructure>();
     private static Dictionary<int, string> siteCacheDict = new Dictionary<int, string>();
     private static Dictionary<string, string> sitePrefixDict = new Dictionary<string, string>();
@@ -55,7 +66,7 @@ public static class SiteFactory
         {
             SiteStructure s = new SiteStructure(computerName, nodeNumber, siteName[i], sitePrefix[i]);
 
-            //Oddly enough, I can't adccess Dictionary.TryAdd() method
+            //Oddly enough, I can't adccess Dictionary.TryAdd() method. Going to settle with an alternative
             try
             {
                 sitePrefixDict.Add(siteName[i], sitePrefix[i]);
@@ -190,6 +201,7 @@ public partial class alarms_Default : System.Web.UI.Page
     private string NAME_OPTION = "name";
     private string TURBINE_OPTION = "turbine";
     private long TWO_MONTH_TIME_LIMIT = 5184000000;
+    //This is the Oracle DB password. It needs to be changed here
     private string ORALCE_SOURCE = "Data Source=PT1-SV-ORACLE02/core.ppmems.us;User ID=HIS;Password=HIS;";
 
     //The queryDict is a Dictionary that stores the Header (used to display to user) and the query name (used for the SQL portion)
@@ -198,12 +210,11 @@ public partial class alarms_Default : System.Web.UI.Page
     protected void Page_Load(object sender, EventArgs e)
     {
 
-        // Page is being rendered for the first time
+        // if Page is being rendered for the first time
         if (Page.IsPostBack)
         {
-            //noop
+            //no operation
         }
-
         //If page is loaded for the first time
         else
         {
@@ -214,6 +225,11 @@ public partial class alarms_Default : System.Web.UI.Page
     {
         resetParameters();
     }
+    /// <summary>
+    /// function called when user clicks the search button 
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
     protected void lnkParametersApply_Click(object sender, EventArgs e)
     {
         DataTable myDT = applyParameters();
@@ -227,6 +243,11 @@ public partial class alarms_Default : System.Web.UI.Page
             myDT.Dispose();
         }
     }
+    /// <summary>
+    /// Function called when user clicks on the save to csv function
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
     protected void lnkParametersCSV_Click(object sender, EventArgs e)
     {
         DataTable myDT = applyParameters();
@@ -234,7 +255,6 @@ public partial class alarms_Default : System.Web.UI.Page
         {
             string fileName = "OracleAlarms_";
             fileName = fileName + DateTime.Now.ToString("yyyyMMdd-HHmmss");
-            //fileName = fileName + (txtParamFilter.Text != "" ? "_FILTERED" : "");
             fileName = fileName + ".xls";
             exportToCSV(myDT, fileName);
         }
@@ -283,154 +303,8 @@ public partial class alarms_Default : System.Web.UI.Page
         SiteFactory.createNewSite("CMCORE01", 22, new string[] { "Casselman" }, new string[] { "CASSE" });
         SiteFactory.createNewSite("CM1-SV-UCC2", 72, new string[] { "Casselman" }, new string[] { "CASSE" });
         SiteFactory.createNewSite("CR1-SV-UCC1", 26, new string[] { "Cayuga Ridge" }, new string[] { "CRIDG" });
-        SiteFactory.createNewSite("CR1-SV-UCC2", 76, new string[] { "Cayuga Ridge" }, new string[] { "CRIDG" });
-        SiteFactory.createNewSite("CG1-SV-UCC1", 11, new string[] { "Colorado Green" }, new string[] { "COGRE" });
-        SiteFactory.createNewSite("CG1-SV-UCC2", 61, new string[] { "Colorado Green" }, new string[] { "COGRE" });
-        SiteFactory.createNewSite("CC1CORE01", 40, new string[] { "Copper Crossing" }, new string[] { "COPER" });
-        SiteFactory.createNewSite("CO1-SV-UCC1", 57, new string[] { "Coyote Ridge" }, new string[] { "COYOT" });
-        SiteFactory.createNewSite("CO1-SV-UCC2", 107, new string[] { "Coyote Ridge" }, new string[] { "COYOT" });
-        SiteFactory.createNewSite("DE1-SV-UCC1", 50, new string[] { "Deerfield" }, new string[] { "DEERF" });
-        SiteFactory.createNewSite("DE1-SV-UCC2", 100, new string[] { "Deerfield" }, new string[] { "DEERF" });
-        SiteFactory.createNewSite("DW1-SV-UCC1", 47, new string[] { "Desert Wind" }, new string[] { "DESER" });
-        SiteFactory.createNewSite("DW1-SV-UCC2", 97, new string[] { "Desert Wind" }, new string[] { "DESER" });
-        SiteFactory.createNewSite("DI2-SV-UCC1", 9, new string[] { "Dillion" }, new string[] { "DILON" });
-        SiteFactory.createNewSite("DI2-SV-UCC2", 59, new string[] { "Dillion" }, new string[] { "DILON" });
-        SiteFactory.createNewSite("DLCORE01", 10, new string[] { "Dry Lake 1" }, new string[] { "DRYLA" });
-        SiteFactory.createNewSite("DL2-SV-UCC1", 32, new string[] { "Dry Lake 2" }, new string[] { "DRYL2" });
-        SiteFactory.createNewSite("DL2-SV-UCC2", 82, new string[] { "Dry Lake 2" }, new string[] { "DRYL2" });
-        SiteFactory.createNewSite("EL1-SV-UCC1", 254, new string[] { "El Cabo" }, new string[] { "ELCAB" });
-        SiteFactory.createNewSite("EL1-SV-UCC1", 48, new string[] { "El Cabo" }, new string[] { "ELCAB" });
-        SiteFactory.createNewSite("EL1-SV-UCC2", 98, new string[] { "El Cabo" }, new string[] { "ELCAB" });
-        SiteFactory.createNewSite("ER1-SV-UCC1", 12, new string[] { "Elk River" }, new string[] { "ELKRI" });
-        SiteFactory.createNewSite("ER1-SV-UCC2", 62, new string[] { "Elk River" }, new string[] { "ELKRI" });
-        SiteFactory.createNewSite("EC2CORE01", 34, new string[] { "Elm Creek 2" }, new string[] { "ELMC2" });
-        SiteFactory.createNewSite("EC2CORE02", 84, new string[] { "Elm Creek 2" }, new string[] { "ELMC2" });
-        SiteFactory.createNewSite("FA1-SV-UCC1", 16, new string[] { "Farmers City" }, new string[] { "FARME" });
-        SiteFactory.createNewSite("FA1-SV-UCC2", 66, new string[] { "Farmers City" }, new string[] { "FARME" });
-        SiteFactory.createNewSite("PT1-SV-FE01A", 201, new string[] { "FE01A" }, new string[] { "FE01" });
-        SiteFactory.createNewSite("PT1-SV-FE01C", 202, new string[] { "FE01C" }, new string[] { "FE01" });
-        SiteFactory.createNewSite("ACC-SV-FE01D", 227, new string[] { "FE01D" }, new string[] { "FE01" });
-        SiteFactory.createNewSite("PT1-SV-FE02A", 203, new string[] { "FE02A" }, new string[] { "FE02" });
-        SiteFactory.createNewSite("PT1-SV-FE02C", 204, new string[] { "FE02C" }, new string[] { "FE02" });
-        SiteFactory.createNewSite("ACC-SV-FE02D", 228, new string[] { "FE02D" }, new string[] { "FE02" });
-        SiteFactory.createNewSite("PT1-SV-FE03A", 205, new string[] { "FE03A" }, new string[] { "FE03" });
-        SiteFactory.createNewSite("PT1-SV-FE03C", 206, new string[] { "FE03C" }, new string[] { "FE03" });
-        SiteFactory.createNewSite("ACC-SV-FE03D", 229, new string[] { "FE03D" }, new string[] { "FE03" });
-        SiteFactory.createNewSite("PT1-SV-FE04A", 207, new string[] { "FE04A" }, new string[] { "FE04" });
-        SiteFactory.createNewSite("PT1-SV-FE04C", 208, new string[] { "FE04C" }, new string[] { "FE04" });
-        SiteFactory.createNewSite("ACC-SV-FE04D", 230, new string[] { "FE04D" }, new string[] { "FE04" });
-        SiteFactory.createNewSite("PT1-SV-FE05A", 209, new string[] { "FE05A" }, new string[] { "FE05" });
-        SiteFactory.createNewSite("PT1-SV-FE05C", 210, new string[] { "FE05C" }, new string[] { "FE05" });
-        SiteFactory.createNewSite("ACC-SV-FE05D", 231, new string[] { "FE05D" }, new string[] { "FE05" });
-        SiteFactory.createNewSite("PT1-SV-FE06A", 211, new string[] { "FE06A" }, new string[] { "FE06" });
-        SiteFactory.createNewSite("PT1-SV-FE06C", 212, new string[] { "FE06C" }, new string[] { "FE06" });
-        SiteFactory.createNewSite("ACC-SV-FE06D", 232, new string[] { "FE06D" }, new string[] { "FE06" });
-        SiteFactory.createNewSite("PT1-SV-FE07A", 213, new string[] { "FE07A" }, new string[] { "FE07" });
-        SiteFactory.createNewSite("PT1-SV-FE07C", 214, new string[] { "FE07C" }, new string[] { "FE07" });
-        SiteFactory.createNewSite("ACC-SV-FE07D", 233, new string[] { "FE07D" }, new string[] { "FE07" });
-        SiteFactory.createNewSite("PT1-SV-FE08A", 215, new string[] { "FE08A" }, new string[] { "FE08" });
-        SiteFactory.createNewSite("PT1-SV-FE08C", 216, new string[] { "FE08C" }, new string[] { "FE08" });
-        SiteFactory.createNewSite("ACC-SV-FE08D", 234, new string[] { "FE08D" }, new string[] { "FE08" });
-        SiteFactory.createNewSite("PT1-SV-FE09A", 217, new string[] { "FE09A" }, new string[] { "FE09" });
-        SiteFactory.createNewSite("PT1-SV-FE09C", 218, new string[] { "FE09C" }, new string[] { "FE09" });
-        SiteFactory.createNewSite("ACC-SV-FE09D", 235, new string[] { "FE09D" }, new string[] { "FE09" });
-        SiteFactory.createNewSite("PT1-SV-FE10A", 219, new string[] { "FE10A" }, new string[] { "FE10" });
-        SiteFactory.createNewSite("PT1-SV-FE10C", 220, new string[] { "FE10C" }, new string[] { "FE10" });
-        SiteFactory.createNewSite("ACC-SV-FE10D", 236, new string[] { "FE10D" }, new string[] { "FE10" });
-        SiteFactory.createNewSite("PT1-SV-FE11A", 221, new string[] { "FE11A" }, new string[] { "FE11" });
-        SiteFactory.createNewSite("PT1-SV-FE11C", 222, new string[] { "FE11C" }, new string[] { "FE11" });
-        SiteFactory.createNewSite("ACC-SV-FE11D", 237, new string[] { "FE11D" }, new string[] { "FE11" });
-        SiteFactory.createNewSite("PT1-SV-FE12A", 223, new string[] { "FE12A" }, new string[] { "FE12" });
-        SiteFactory.createNewSite("PT1-SV-FE12C", 224, new string[] { "FE12C" }, new string[] { "FE12" });
-        SiteFactory.createNewSite("ACC-SV-FE12D", 238, new string[] { "FE12D" }, new string[] { "FE12" });
-        SiteFactory.createNewSite("PT1-SV-FE13A", 225, new string[] { "FE13A" }, new string[] { "FE13" });
-        SiteFactory.createNewSite("PT1-SV-FE14A", 151, new string[] { "FE14A" }, new string[] { "FE14" });
-        SiteFactory.createNewSite("PT1-SV-FE14C", 152, new string[] { "FE14C" }, new string[] { "FE14" });
-        SiteFactory.createNewSite("ACC-SV-FE14D", 177, new string[] { "FE14D" }, new string[] { "FE14" });
-        SiteFactory.createNewSite("PT1-SV-FE15A", 153, new string[] { "FE15A" }, new string[] { "FE15" });
-        SiteFactory.createNewSite("PT1-SV-FE15C", 154, new string[] { "FE15C" }, new string[] { "FE15" });
-        SiteFactory.createNewSite("ACC-SV-FE15D", 178, new string[] { "FE15D" }, new string[] { "FE15" });
-        SiteFactory.createNewSite("PT1-SV-FE16A", 155, new string[] { "FE16A" }, new string[] { "FE16" });
-        SiteFactory.createNewSite("PT1-SV-FE16C", 156, new string[] { "FE16C" }, new string[] { "FE16" });
-        SiteFactory.createNewSite("ACC-SV-FE16D", 179, new string[] { "FE16D" }, new string[] { "FE16" });
-        SiteFactory.createNewSite("PT1-SV-FE17A", 157, new string[] { "FE17A" }, new string[] { "FE17" });
-        SiteFactory.createNewSite("PT1-SV-FE17C", 158, new string[] { "FE17C" }, new string[] { "FE17" });
-        SiteFactory.createNewSite("ACC-SV-FE17D", 180, new string[] { "FE17D" }, new string[] { "FE17" });
-        SiteFactory.createNewSite("PT1-SV-FE18A", 333, new string[] { "FE18A" }, new string[] { "FE18" });
-        SiteFactory.createNewSite("PT1-SV-FE18C", 333, new string[] { "FE18C" }, new string[] { "FE18" });
-        SiteFactory.createNewSite("ACC-SV-FE18D", 333, new string[] { "FE18D" }, new string[] { "FE18" });
-        SiteFactory.createNewSite("PT1-SV-FE19A", 333, new string[] { "FE19A" }, new string[] { "FE19" });
-        SiteFactory.createNewSite("ACC-SV-FE19D", 333, new string[] { "FE19A" }, new string[] { "FE19" });
-        SiteFactory.createNewSite("PT1-SV-FE19C", 333, new string[] { "FE19C" }, new string[] { "FE19" });
-        SiteFactory.createNewSite("FCCORE01", 14, new string[] { "Flying Cloud" }, new string[] { "FLYCO" });
-        SiteFactory.createNewSite("FC1-SV-UCC2", 64, new string[] { "Flying Cloud" }, new string[] { "FLYCO" });
-        SiteFactory.createNewSite("GA1-SV-UCC1", 49, new string[] { "Gala" }, new string[] { "GALA1" });
-        SiteFactory.createNewSite("GA1-SV-UCC2", 99, new string[] { "Gala" }, new string[] { "GALA1" });
-        SiteFactory.createNewSite("GR1-SV-UCC1", 39, new string[] { "Groton" }, new string[] { "GROTO" });
-        SiteFactory.createNewSite("GR1-SV-UCC2", 89, new string[] { "Groton" }, new string[] { "GROTO" });
-        SiteFactory.createNewSite("HS1-SV-UCC1", 29, new string[] { "Hardscrabble" }, new string[] { "SCRAB" });
-        SiteFactory.createNewSite("HS1-SV-UCC2", 79, new string[] { "Hardscrabble" }, new string[] { "SCRAB" });
-        SiteFactory.createNewSite("HA1-SV-UCC1", 5, new string[] { "Hay Canyon " }, new string[] { "HAYCA" });
-        SiteFactory.createNewSite("HO1-SV-UCC1", 38, new string[] { "Hoosac" }, new string[] { "HOOSA" });
-        SiteFactory.createNewSite("HO1-SV-UCC2", 88, new string[] { "Hoosac" }, new string[] { "HOOSA" });
-        SiteFactory.createNewSite("JC1-SV-UCC1", 27, new string[] { "Juniper Canyon" }, new string[] { "JUNCA" });
-        SiteFactory.createNewSite("JC1-SV-UCC2", 77, new string[] { "Juniper Canyon" }, new string[] { "JUNCA" });
-        SiteFactory.createNewSite("KA1-SV-UCC1", 56, new string[] { "Karakawa" }, new string[] { "KARAN" });
-        SiteFactory.createNewSite("KA1-SV-UCC2", 106, new string[] { "Karakawa" }, new string[] { "KARAN" });
-        SiteFactory.createNewSite("KM1-SV-UCC1", 46, new string[] { "Klamath Falls" }, new string[] { "KLAMA" });
-        SiteFactory.createNewSite("KM1-SV-UCC2", 96, new string[] { "Klamath Falls" }, new string[] { "KLAMA" });
-        SiteFactory.createNewSite("KL1-SV-UCC1", 3, new string[] { "Klondike", "Klondike 2", "Klondike Mitsubishi", "Klondike 3A", "Klondike 3GE", "Klondike Siemens" }, new string[] { "KLON1", "KLON2", "KLONM", "KLONA", "KLONG", "KLONS" });
-        SiteFactory.createNewSite("KL1-SV-UCC2", 53, new string[] { "Klondike", "Klondike 2", "Klondike Mitsubishi", "Klondike 3A", "Klondike 3GE", "Klondike Siemens" }, new string[] { "KLON1", "KLON2", "KLONM", "KLONA", "KLONG", "KLONS" });
-        SiteFactory.createNewSite("LJA-SV-UCC1", 28, new string[] { "Leaning Juniper 2 A" }, new string[] { "LEJUN" });
-        SiteFactory.createNewSite("LJB-SV-UCC1", 31, new string[] { "Leaning Juniper 2 B" }, new string[] { "LEJU2" });
-        SiteFactory.createNewSite("LJB-SV-UCC2", 81, new string[] { "Leaning Juniper 2 B" }, new string[] { "LEJU2" });
-        SiteFactory.createNewSite("LP1-SV-UCC1", 17, new string[] { "Lempster" }, new string[] { "LEMPS" });
-        SiteFactory.createNewSite("LP1-SV-UCC2", 67, new string[] { "Lempster" }, new string[] { "LEMPS" });
-        SiteFactory.createNewSite("LR2-SV-UCC1", 68, new string[] { "Locus Ridge 1","Locus Ridge 2" }, new string[] { "LRID1", "LRID2" });
-        SiteFactory.createNewSite("LR2-SV-UCC2", 18, new string[] { "Locus Ridge 1","Locus Ridge 2" }, new string[] { "LRID1", "LRID2" });
-        SiteFactory.createNewSite("MZ1-SV-UCC1", 35, new string[] { "Manzana" }, new string[] { "MANZA" });
-        SiteFactory.createNewSite("MZ1-SV-UCC2", 85, new string[] { "Manzana" }, new string[] { "MANZA" });
-        SiteFactory.createNewSite("MR1-SV-UCC1", 23, new string[] { "MapleRidge 1" }, new string[] { "MRIDG", "MRID2", "MRID3" });
-        SiteFactory.createNewSite("MD1-SV-UCC1", 1, new string[] { "Minndakota", "Buffalo Ridge" }, new string[] { "MINND", "BUFAL" });
-        SiteFactory.createNewSite("MDCORE02", 51, new string[] { "Minndakota", "Buffalo Ridge" }, new string[] { "MINND", "BUFAL" });
-        SiteFactory.createNewSite("MG1-SV-UCC1", 55, new string[] { "Montague" }, new string[] { "MONTA" });
-        SiteFactory.createNewSite("MG1-SV-UCC2", 105, new string[] { "Montague" }, new string[] { "MONTA" });
-        SiteFactory.createNewSite("MO1-SV-UCC1", 20, new string[] { "Moraine" }, new string[] { "MORA1", "MORA2" });
-        SiteFactory.createNewSite("MO1-SV-UCC2", 70, new string[] { "Moraine" }, new string[] { "MORA1", "MORA2" });
-        SiteFactory.createNewSite("MV3CORE01", 37, new string[] { "Mountain View 3" }, new string[] { "MV3" });
-        SiteFactory.createNewSite("NH1-SV-UCC1", 42, new string[] { "New Harvest" }, new string[] { "NEWHA" });
-        SiteFactory.createNewSite("NHCORE02", 92, new string[] { "New Harvest" }, new string[] { "NEWHA" });
-        SiteFactory.createNewSite("OC1-SV-UCC1", 58, new string[] { "Ottercreek" }, new string[] { "OTTER" });
-        SiteFactory.createNewSite("OC1-SV-UCC2", 108, new string[] { "Ottercreek" }, new string[] { "OTTER" });
-        SiteFactory.createNewSite("PA1-SV-UCC1", 54, new string[] { "Patriot" }, new string[] { "PATRI" });
-        SiteFactory.createNewSite("PA1-SV-UCC2", 104, new string[] { "Patriot" }, new string[] { "PATRI" });
-        SiteFactory.createNewSite("PB1-SV-UCC1", 6, new string[] { "Pebble Spring" }, new string[] { "PESPR" });
-        SiteFactory.createNewSite("PS1-SV-UCC1", 24, new string[] { "Penascal 1", "Penascal 2", "Penascal 3" }, new string[] { "PENE1", "PENE2", "PENE3" });
-        SiteFactory.createNewSite("PS1-SV-UCC2", 74, new string[] { "Penascal 1", "Penascal 2", "Penascal 3" }, new string[] { "PENE1", "PENE2", "PENE3" });
-        SiteFactory.createNewSite("PH1-SV-UCC1", 19, new string[] { "Providence Heights" }, new string[] { "PROVH" });
-        SiteFactory.createNewSite("PH1-SV-UCC2", 69, new string[] { "Providence Heights" }, new string[] { "PROVH" });
-        SiteFactory.createNewSite("RUCORE01", 21, new string[] { "Rugby" }, new string[] { "RUGBY" });
-        SiteFactory.createNewSite("SA1-SV-UCC1", 44, new string[] { "San Luis" }, new string[] { "SLUIS" });
-        SiteFactory.createNewSite("SHCORE01", 8, new string[] { "Shiloh" }, new string[] { "SHILO" });
-        SiteFactory.createNewSite("SH1-SV-UCC2", 58, new string[] { "Shiloh" }, new string[] { "SHILO" });
-        SiteFactory.createNewSite("SC1-SV-UCC1", 43, new string[] { "South Chestnut" }, new string[] { "SCHES" });
-        SiteFactory.createNewSite("SC1-SV-UCC2", 93, new string[] { "South Chestnut" }, new string[] { "SCHES" });
-        SiteFactory.createNewSite("SP1-SV-UCC1", 7, new string[] { "Star Point" }, new string[] { "STPOI" });
-        SiteFactory.createNewSite("SP1-SV-UCC2", 57, new string[] { "Star Point" }, new string[] { "STPOI" });
-        SiteFactory.createNewSite("TI2-SV-UCC1", 36, new string[] { "Top of Iowa 2" }, new string[] { "TOPIO" });
-        SiteFactory.createNewSite("TI2-SV-UCC2", 86, new string[] { "Top of Iowa 2" }, new string[] { "TOPIO" });
-        SiteFactory.createNewSite("TR1-SV-UCC1", 13, new string[] { "Trimont", "Elm Creek 1" }, new string[] { "TRIMO", "ELMCR" });
-        SiteFactory.createNewSite("TR1-SV-UCC2", 63, new string[] { "Trimont", "ELm Creek 1" }, new string[] { "TRIMO", "ELMCR" });
-        SiteFactory.createNewSite("TU1-SV-UCC1", 51, new string[] { "Tule" }, new string[] { "TULE1" });
-        SiteFactory.createNewSite("TU1-SV-UCC2", 101, new string[] { "Tule" }, new string[] { "TULE1" });
-        SiteFactory.createNewSite("TB1-SV-UCC1", 15, new string[] { "Twin Buttes 1" }, new string[] { "TWINB" });
-        SiteFactory.createNewSite("TB1-SV-UCC2", 65, new string[] { "Twin Buttes 1" }, new string[] { "TWINB" });
-        SiteFactory.createNewSite("TB2-SV-UCC1", 52, new string[] { "Twin Buttes 2" }, new string[] { "TWIN2" });
-        SiteFactory.createNewSite("TB2-SV-UCC2", 102, new string[] { "Twin Buttes 2" }, new string[] { "TWIN2" });
-        SiteFactory.createNewSite("WB1-SV-UCC1", 2, new string[] { "Winnebago" }, new string[] { "WINNE" });
-        SiteFactory.createNewSite("WB1-SV-UCC2", 52, new string[] { "Winnebago" }, new string[] { "WINNE" });
-        SiteFactory.createNewSite("KL1-WYEAST-UCC", 250, new string[] { "Wyeast" }, new string[] { "WYEAS" });
 
+        /*----Lots of Other sites removed for convience sake----*/
 
         //Create new  filters
         SiteFactory.createNewFilter("WindNode", "LOGLIST = 'ALMFE16' AND SATT1 = 'CORE'");
@@ -445,6 +319,11 @@ public partial class alarms_Default : System.Web.UI.Page
         queryDict.Clear();
         SiteFactory.clearDictionaries();
     }
+    /// <summary>
+    /// Private function that applies the parameters from the user and forms an Oracle SQL requests. 
+    /// Then it submits it to the Oracle DB
+    /// </summary>
+    /// <returns></returns>
     private DataTable applyParameters()
     {
         DataTable myDT = new DataTable(); //Temporary table to bind ListView to.
@@ -456,15 +335,15 @@ public partial class alarms_Default : System.Web.UI.Page
 
         //Build the plsql command.
         string oraParams = "";
-        //string oraQry = "SELECT * FROM ALARMS";
+        string tableName = "HIS.ALARMS";
 
+        //Use 4 threads
         string oraQry = "SELECT /*+PARALLEL(4)*/ ";
         foreach (KeyValuePair<string, string> queryEntry in queryDict)
         {
             oraQry += queryEntry.Value + " AS \"" + queryEntry.Key + "\",";
         }
-        //remove the last comma from the string and then stap
-        oraQry = oraQry.TrimEnd(',') + " FROM HIS.ALARMS";
+        oraQry = oraQry.TrimEnd(',') + " FROM " + tableName;
 
         string oraOrd = " ORDER BY CHRONO DESC";
         OracleCommand oraCmd = new OracleCommand();
@@ -501,7 +380,6 @@ public partial class alarms_Default : System.Web.UI.Page
             }
             else
             {
-                //double epochEnd = (double)1000 * ((int)(dtEnd - new DateTime(1970, 1, 1)).TotalSeconds);
                 epochEnd = ((long)(dtEnd.ToUniversalTime() - new DateTime(1970, 1, 1)).TotalMilliseconds);
 
                 oraParams += (oraParams.Equals("") ? "" : " AND ") + "CHRONO <= :dtEnd";
@@ -586,10 +464,13 @@ public partial class alarms_Default : System.Web.UI.Page
         //Build the connection string.
         string oraCstr = ORALCE_SOURCE;
 
+        //Make hte call to Oracle
         myDT = oraQueryTable(oraCmd, oraCstr);
 
         clearDictionaries();
+
         return postTableQueryEdits(myDT);
+        //return myDT;
     }
 
     /// <summary>
@@ -766,8 +647,6 @@ public partial class alarms_Default : System.Web.UI.Page
                 throw new InvalidCastException("Unable to cast epoch to double. Type was: " + epoch.GetType().FullName + ", value was: " + epoch.ToString());
                 break;
         }
-        // if (!Double.TryParse(epoch, out dblTemp))
-        //    throw new InvalidCastException("Unable to cast epoch to double.");
         DateTime retVal = new DateTime(1970, 1, 1);
         retVal = retVal.AddMilliseconds(dblTemp).ToLocalTime();
         return retVal;
@@ -854,29 +733,10 @@ public partial class alarms_Default : System.Web.UI.Page
 
     private void updateFilterGrid()
     {
-        //if (!txtParamFilter.Text.Equals(""))
-        // {
-        //DataTable tblGrid;
-        //string sqlQry = "SELECT * FROM CORE.dbo.Alarm_Filters WHERE Filter_Group = @Filter_Group;";
-        //SqlParameter sqlParm = new SqlParameter("Filter_Group", txtParamFilter.Text);
-        //SqlCommand sqlCmd = new SqlCommand();
-        //sqlCmd.CommandText = sqlQry;
-        //sqlCmd.Parameters.Add(sqlParm);
-        //tblGrid = sqlQueryTable(sqlCmd, System.Web.Configuration.WebConfigurationManager.ConnectionStrings["ConnectionString_PDXSQL03_EMSWEB"].ConnectionString);
-        //Grid_FilterEditor.DataSource = tblGrid;
-
+    
         Grid_FilterEditor.ClearPreviousDataSource();
         Grid_FilterEditor.DataSourceID = "SqlDataSource_FilterEditor";
         Grid_FilterEditor.DataBind();
-
-
-        //if (txtParamFilter.Text.Length > 0)
-        //{
-        //    Obout.Grid.FilterCriteria criteria = new Obout.Grid.FilterCriteria();
-        //    criteria.Option.Type = Obout.Grid.FilterOptionType.EqualTo;
-        //    criteria.Value = txtParamFilter.Text;
-        //    Grid_FilterEditor.Columns["Filter_Group"].FilterCriteria = criteria;
-        //}
     }
 
     private void exportToCSV(DataTable dt, string filename)
